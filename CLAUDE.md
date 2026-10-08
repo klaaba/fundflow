@@ -47,6 +47,11 @@ dotnet ef migrations add <Name> --project src/FundFlow.Infrastructure --startup-
 - Abfragen werden automatisch auf die Sitzung gefiltert. `IgnoreQueryFilters()` nur bewusst einsetzen (Auftragsnummern, Aufräumen).
 - Tests nutzen SQLite im Arbeitsspeicher mit den echten Migrationen (`tests/FundFlow.Tests/Infrastructure/TestDatabase.cs`).
 
+## Testfälle
+
+- TC-01 … TC-30 sind einmal in `src/FundFlow.Scenarios/TestCatalog.cs` definiert und werden von xUnit und der Testansicht genutzt.
+- Neue oder geänderte Testfälle immer zuerst im Fachkonzept (12.2 und 12.3), dann im Katalog. `TraceabilityTests` vergleicht beide und schlägt bei Abweichungen fehl.
+
 ## Darstellung
 
 Fachanwendung, keine Firmen-Website: keine untere Kontaktleiste, kein Hero-Bild. Prüfung bei 375 px und 320 px Breite, kein horizontales Scrollen.

@@ -4,31 +4,18 @@ using FundFlow.Infrastructure.Orders;
 using FundFlow.Infrastructure.Persistence;
 using FundFlow.Infrastructure.Sessions;
 using FundFlow.Scenarios;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 
 namespace FundFlow.Tests.Infrastructure;
 
 /// <summary>
-/// SQLite-Datenbank im Arbeitsspeicher mit den echten Migrationen. Jede Aktion läuft – wie eine
+/// Testdatenbank auf Basis von <see cref="InMemoryFundFlowDatabase"/>. Jede Aktion läuft – wie eine
 /// Webanfrage – mit einem eigenen Kontext.
 /// </summary>
 public sealed class TestDatabase : IDisposable
 {
-    private readonly SqliteConnection _connection = new("Data Source=:memory:");
-    private readonly DbContextOptions<FundFlowDbContext> _options;
+    private readonly InMemoryFundFlowDatabase _database = new();
 
-    public TestDatabase()
-    {
-        _connection.Open();
-        _options = new DbContextOptionsBuilder<FundFlowDbContext>().UseSqlite(_connection).Options;
-
-        using var db = CreateContext(Guid.Empty);
-        db.Database.Migrate();
-    }
-
-    public FundFlowDbContext CreateContext(Guid sessionId) =>
-        new(_options, new FixedDemoSessionAccessor(sessionId));
+    public FundFlowDbContext CreateContext(Guid sessionId) => _database.CreateContext(sessionId);
 
     /// <summary>Neue Demo-Sitzung mit Ausgangsstand A0.</summary>
     public async Task<DemoSessionHandle> StartSessionAsync(DateOnly today)
@@ -38,7 +25,7 @@ public sealed class TestDatabase : IDisposable
         return handle;
     }
 
-    public void Dispose() => _connection.Dispose();
+    public void Dispose() => _database.Dispose();
 }
 
 /// <summary>Zugriff auf eine Demo-Sitzung in Tests.</summary>

@@ -54,7 +54,7 @@ tests/FundFlow.Tests/       automatisierte Tests
 | 1 | Fachregeln | erledigt |
 | 2 | Wirksamkeitstermin | erledigt |
 | 3 | Datenhaltung und Auftrag | erledigt |
-| 4 | Testszenarien | offen |
+| 4 | Testszenarien | erledigt |
 | 5 | Oberfläche | offen |
 | 6 | Fehlerbeispiel DEF-001 | offen |
 | 7 | Dokumentation und Feinschliff | offen |
