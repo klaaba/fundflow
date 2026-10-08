@@ -1,0 +1,62 @@
+@page
+@{
+    ViewData["Title"] = "Datenschutz";
+}
+
+<article class="prose">
+    <header class="page-head">
+        <h1>Datenschutzhinweis</h1>
+        <p class="lead">FundFlow ist ein Demonstrator mit erfundenen Daten. Sie müssen keine persönlichen Angaben machen, und wir setzen keine Analyse- oder Tracking-Werkzeuge ein.</p>
+    </header>
+
+    <h2>Verantwortlicher</h2>
+    <p>
+        Inspiras, Inhaber Klaus Baqué<br />
+        Sebastian-Kneipp-Str. 41, 60439 Frankfurt am Main<br />
+        Telefon: +49 (0) 69 95 40 80 40<br />
+        E-Mail: <a href="mailto:info@inspiras.de">info@inspiras.de</a>
+    </p>
+
+    <h2>Was Sie eingeben</h2>
+    <p>
+        Im Formular ändern Sie einen erfundenen Sparplan: Sparrate, Ausführungstag, Wunschdatum und die Auswahl
+        aus einer festen Liste erfundener Fonds. Freitextfelder gibt es nicht. Diese Eingaben werden mit einer
+        zufälligen Sitzungskennung gespeichert, damit Sie Ihre Änderungen sehen können. Andere Besucher sehen sie nicht.
+        Nach 24 Stunden ohne Aktivität werden alle Daten Ihrer Sitzung automatisch gelöscht; mit „Demo zurücksetzen“
+        löschen Sie sie jederzeit selbst.
+    </p>
+
+    <h2>Cookies</h2>
+    <p>FundFlow setzt ausschließlich technisch notwendige Cookies. Eine Einwilligung ist dafür nicht erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG).</p>
+    <table class="table table--changes table--cookies">
+        <thead>
+            <tr><th scope="col">Name</th><th scope="col">Zweck</th><th scope="col">Dauer</th></tr>
+        </thead>
+        <tbody>
+            <tr><th scope="row" class="cookie-name">fundflow_demo</th><td data-label="Zweck">Zufällige Kennung, die Ihnen Ihre eigenen Demo-Daten zuordnet</td><td data-label="Dauer">bis zum Schließen des Browsers</td></tr>
+            <tr><th scope="row" class="cookie-name">.AspNetCore.Antiforgery.…</th><td data-label="Zweck">Schutz der Formulare vor fremden Anfragen (Cross-Site Request Forgery)</td><td data-label="Dauer">bis zum Schließen des Browsers</td></tr>
+            <tr><th scope="row" class="cookie-name">.AspNetCore.Mvc.CookieTempDataProvider</th><td data-label="Zweck">Überträgt die Bestätigung nach dem Absenden eines Auftrags auf die nächste Seite</td><td data-label="Dauer">wird nach der Anzeige gelöscht</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Hosting und Server-Protokolle</h2>
+    <p>
+        FundFlow läuft auf einem Server bei <strong>[VPS-Anbieter, Anschrift – noch zu ergänzen]</strong> in
+        <strong>[Land/Rechenzentrum – noch zu ergänzen]</strong>. Beim Aufruf der Seiten verarbeitet der Server technisch
+        notwendige Daten: IP-Adresse, Datum und Uhrzeit, aufgerufene Adresse, übertragene Datenmenge sowie Browser und
+        Betriebssystem. Diese Protokolle dienen dem sicheren Betrieb und werden nach <strong>[Anzahl – noch zu ergänzen]</strong>
+        Tagen gelöscht. Rechtsgrundlage ist unser berechtigtes Interesse an einem stabilen und sicheren Betrieb
+        (Art. 6 Abs. 1 lit. f DSGVO). <strong>[Auftragsverarbeitungsvertrag mit dem Anbieter – noch zu bestätigen]</strong>
+    </p>
+    <p>Die Verbindung ist per TLS verschlüsselt. Schriften und Skripte werden vom eigenen Server geladen; es werden keine Inhalte von Drittanbietern eingebunden.</p>
+
+    <h2>Ihre Rechte</h2>
+    <p>
+        Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung sowie auf Widerspruch
+        gegen die Verarbeitung Ihrer personenbezogenen Daten (Art. 15 bis 21 DSGVO). Wenden Sie sich dazu an die oben
+        genannte Adresse. Außerdem können Sie sich bei einer Datenschutz-Aufsichtsbehörde beschweren, etwa beim
+        Hessischen Beauftragten für Datenschutz und Informationsfreiheit.
+    </p>
+
+    <p class="note">Die Datenschutzerklärung für inspiras.de finden Sie unter <a href="https://www.inspiras.de/datenschutzerklaerung/">inspiras.de/datenschutzerklaerung</a>.</p>
+</article>

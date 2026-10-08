@@ -11,6 +11,8 @@ public sealed class SmokeTests(FundFlowWebFactory factory) : IClassFixture<FundF
     [InlineData("/auftraege", "Noch keine Aufträge")]
     [InlineData("/testansicht", "30</span> von 30 Testfällen erfüllt")]
     [InlineData("/ueber", "Über das Projekt")]
+    [InlineData("/impressum", "Angaben gemäß § 5 DDG")]
+    [InlineData("/datenschutz", "fundflow_demo")]
     public async Task Seite_ist_erreichbar(string url, string expectedText)
     {
         var client = factory.CreateClient();

@@ -1,10 +1,18 @@
 # FundFlow – Fachkonzept
 
-**Version:** 1.4  
+**Version:** 1.5  
 **Stand:** 8. Oktober 2026  
-**Status:** Version 1.3 fachlich freigegeben (08.10.2026); Änderungen der Version 1.4 zur Freigabe
+**Status:** Version 1.4 fachlich freigegeben (08.10.2026); Änderungen der Version 1.5 zur Freigabe
 
 ## 0. Änderungshistorie
+
+### Version 1.5
+
+| Bereich | Änderung |
+|---|---|
+| Eingabeprüfung | Abschnitt 8.5 um zwei Befunde aus der Umsetzung ergänzt: Wunschdatum „heute“ bei Bestätigung nach Mitternacht; leere Fondszeilen. |
+| Datenmodell | Abschnitt 10.1: technische Lage der Verbindung zwischen Auftrag und erzeugter Version. |
+| Statusmodell | Abschnitt 9: Hinweis, wie „offen“ in Version 1 ermittelt wird. |
 
 ### Version 1.4
 
@@ -258,6 +266,8 @@ Es wird nichts gelöscht: Ersetzte Aufträge und verworfene Versionen bleiben mi
 | Wunschdatum „2026-10-08“ (Datumsfeld) oder „08.10.2026“ | gültig | – |
 | Sparplan ohne Fonds | zwei Meldungen: Anzahl und Summe 0 % | BR-11, BR-04 |
 | Nur das Wunschdatum geändert | keine Änderung im Sinne von BR-15 | BR-15 |
+| Wunschdatum „heute“, bestätigt erst nach Mitternacht | Bei der erneuten Prüfung liegt das Datum in der Vergangenheit; der Auftrag wird abgelehnt, die Meldung erscheint am Datumsfeld. Fachlich korrekt, keine Sonderregel. | BR-06 |
+| Fondszeile ganz ohne Fonds und Anteil | Wird von der Oberfläche vor der Prüfung entfernt; sie entsteht nur durch „Fonds hinzufügen“ ohne Eingabe und ist keine fachliche Angabe. Zeilen mit nur einer der beiden Angaben werden geprüft. | – |
 
 ## 9. Statusmodell
 
@@ -288,6 +298,8 @@ stateDiagram-v2
 
 Jeder Statuswechsel wird im Statusverlauf mit Zeitpunkt und Grund festgehalten.
 
+**Ermittlung „offen“ in Version 1:** Ein Auftrag ist offen, solange er „fachlich geprüft“ ist und sein Wirksamkeitstermin nach dem heutigen Tag liegt (Glossar). Da der Übergang nach „wirksam“ in Version 1 nur modelliert ist, bleibt ein Auftrag nach Erreichen seines Termins im Status „fachlich geprüft“; seine Version ist dann die gültige. In der Demo tritt das nicht auf, weil eine Sitzung höchstens 24 Stunden besteht und der Wirksamkeitstermin mindestens drei Tage in der Zukunft liegt.
+
 ## 10. Daten
 
 ### 10.1 Kernobjekte
@@ -304,6 +316,8 @@ Jeder Statuswechsel wird im Statusverlauf mit Zeitpunkt und Grund festgehalten.
 | ChangeRequestStatusHistory | Statusverlauf eines Auftrags | historyId, requestId, fromStatus, toStatus, changedAt, reason |
 | ChangeLog | Vergleich gültige Version / neue Version | logId, requestId, fieldName, oldValue, newValue |
 | DemoSession | Technisches Objekt für den Demo-Betrieb, kein Teil des fachlichen Modells (Abschnitt 14) | demoSessionId, createdAt, lastSeenAt |
+
+**Technische Lage der Verbindung Auftrag ↔ Version:** Der Fremdschlüssel liegt beim Auftrag (`ChangeRequest.resultingVersionId`). Die Version erreicht ihren Auftrag über die Gegenrichtung (`createdByRequest`); eine eigene Spalte `createdByRequestId` entfällt, weil sie eine zirkuläre Abhängigkeit beim Speichern erzeugen würde.
 
 **Datentypen:** Beträge als Dezimalzahl mit zwei Nachkommastellen (kein Gleitkommatyp), Anteile als ganze Zahl, Datumswerte ohne Uhrzeit, Zeitstempel in UTC.
 
