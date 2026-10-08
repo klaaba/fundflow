@@ -1,0 +1,56 @@
+@page
+@{
+    ViewData["Title"] = "Über das Projekt";
+    ViewData["Nav"] = "ueber";
+}
+
+<article class="prose">
+    <header class="page-head">
+        <h1>Über das Projekt</h1>
+        <p class="lead">FundFlow zeigt an einem einzigen Vorgang, wie aus einer fachlichen Anforderung eine getestete Umsetzung wird.</p>
+    </header>
+
+    <h2>Der Vorgang</h2>
+    <p>
+        Eine Kundin möchte ihren bestehenden Fonds-Sparplan ändern: Sparrate, Ausführungstag oder Fondsaufteilung.
+        Das klingt einfach. Fachlich steckt dahinter, dass Eingaben nach festen Regeln geprüft werden, dass ein
+        Annahmeschluss den ersten möglichen Ausführungstermin bestimmt, dass ein noch offener Auftrag ersetzt
+        statt verdoppelt wird und dass jede Änderung als neue Version mit Statusverlauf und Protokoll nachvollziehbar bleibt.
+    </p>
+
+    <h2>Vom Fachkonzept zum Test</h2>
+    <ol>
+        <li><strong>Fachkonzept</strong> mit Prozess, Glossar, 17 fachlichen Regeln, Statusmodell und Datenmodell.</li>
+        <li><strong>User Stories</strong> mit überprüfbaren Akzeptanzkriterien für Kundin, Operations und Test.</li>
+        <li><strong>30 Testfälle</strong> mit Grenzwerten; jede Regel ist mindestens einem Testfall zugeordnet.</li>
+        <li><strong>Umsetzung</strong> in C#, in der jede Prüfung ihre Regelkennung trägt, etwa <span class="rule">BR-04</span> für die 100-%-Summe.</li>
+        <li><strong>Automatisierte Tests</strong>, die auch prüfen, ob Fachkonzept und Testkatalog noch übereinstimmen.</li>
+    </ol>
+    <p>
+        Wo die Umsetzung eine Lücke im Konzept aufgedeckt hat, wurde zuerst das Konzept ergänzt und freigegeben,
+        dann der Code angepasst – etwa beim Hinweistext, wenn sich mit dem Ausführungstag auch der verpasste Termin ändert.
+    </p>
+
+    <h2>Was Sie ausprobieren können</h2>
+    <ul>
+        <li>Die Sparrate auf 250 € erhöhen und den Auftrag mit Änderungsprotokoll ansehen.</li>
+        <li>Die Fondsaufteilung auf 60 / 30 / 8 % setzen – das System nennt die Summe und legt keinen Auftrag an.</li>
+        <li>Einen zweiten Auftrag absenden, solange der erste noch offen ist, und den Statusverlauf beider Aufträge vergleichen.</li>
+        <li>In der <a asp-page="/Testansicht">Testansicht</a> nachsehen, welche Regel von welchem Testfall abgedeckt wird.</li>
+    </ul>
+
+    <h2>Technik</h2>
+    <p>
+        .NET 10 mit ASP.NET Core Razor Pages, Entity Framework Core mit SQLite und xUnit.
+        Die Fachlogik ist von Oberfläche und Datenbank getrennt und ohne beide testbar.
+        Jede Besucherin und jeder Besucher arbeitet mit einer eigenen Kopie der Musterdaten.
+    </p>
+
+    <h2>Abgrenzung</h2>
+    <p>
+        FundFlow ist ein unabhängiger Demonstrator für die fachliche Analyse und technische Umsetzung von
+        Änderungsaufträgen zu fiktiven Fonds- und ETF-Sparplänen. Die Anwendung verwendet ausschließlich
+        Beispieldaten und dient weder der Anlageberatung noch der Durchführung realer Wertpapiergeschäfte.
+        Sie steht in keinem Zusammenhang mit einem realen Institut oder dessen Produkten.
+    </p>
+</article>

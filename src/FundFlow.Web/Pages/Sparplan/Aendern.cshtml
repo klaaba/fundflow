@@ -1,0 +1,244 @@
+@page
+@model FundFlow.Web.Pages.Sparplan.AendernModel
+@using FundFlow.Domain.Rules
+@using FundFlow.Web.Demo
+@{
+    ViewData["Nav"] = "sparplan";
+    var review = Model.Mode == FundFlow.Web.Pages.Sparplan.AendernModel.ViewMode.Review;
+    ViewData["Title"] = review ? "Änderung prüfen" : "Sparplan ändern";
+    var form = Model.Form;
+
+    // Formularfelder werden bewusst ohne asp-for ausgegeben: nach dem Entfernen leerer Zeilen
+    // soll die Seite den bereinigten Stand zeigen, nicht die ursprünglich gesendeten Werte.
+    void FieldErrors(string field, string id)
+    {
+        var issues = Model.IssuesFor(field).ToList();
+        if (issues.Count == 0) { return; }
+        <div class="field-errors" id="@id">
+            @foreach (var issue in issues)
+            {
+                <p class="field-error">@Display.Text(issue.Message, HtmlEncoder) <span class="rule">@issue.RuleId</span></p>
+            }
+        </div>
+    }
+
+    string? Describe(string field, string helpId, string errorId) =>
+        Model.HasIssue(field) ? $"{helpId} {errorId}" : helpId;
+}
+
+@if (!review)
+{
+    <header class="page-head">
+        <h1>Sparplan ändern</h1>
+        <p class="lead">Passen Sie Sparrate, Ausführungstag oder Fondsaufteilung an. Bevor Sie den Auftrag absenden, sehen Sie, ab wann die Änderung gilt.</p>
+    </header>
+
+    @if (Model.OpenRequestNumber is { } openNumber)
+    {
+        <aside class="banner banner--hint">
+            <p>Sie bearbeiten die Werte des offenen Auftrags <a asp-page="/Auftraege/Detail" asp-route-number="@openNumber">@openNumber</a>.
+               Ein neuer Auftrag ersetzt ihn; eine separate Stornierung ist in dieser Demo-Version nicht möglich. <span class="rule">BR-16</span></p>
+        </aside>
+    }
+
+    @if (Model.Issues.Count > 0)
+    {
+        <section class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1" data-focus-on-load>
+            <h2 id="error-summary-heading">Der Auftrag wurde nicht angelegt</h2>
+            <p>Bitte korrigieren Sie @(Model.Issues.Count == 1 ? "diese Angabe" : $"diese {Model.Issues.Count} Angaben"):</p>
+            <ul>
+                @foreach (var issue in Model.Issues)
+                {
+                    <li>@Display.Text(issue.Message, HtmlEncoder) <span class="rule">@issue.RuleId</span></li>
+                }
+            </ul>
+        </section>
+    }
+
+    <form method="post" asp-page-handler="Check" class="change-form" novalidate>
+        <div class="form-grid">
+            <div class="field">
+                <label for="f-amount">Monatliche Sparrate</label>
+                <div class="input-unit">
+                    <input id="f-amount" name="Form.MonthlyAmount" value="@form.MonthlyAmount" inputmode="decimal" autocomplete="off"
+                           aria-describedby="@Describe(InputFields.MonthlyAmount, "f-amount-help", "f-amount-error")"
+                           aria-invalid="@(Model.HasIssue(InputFields.MonthlyAmount) ? "true" : null)" />
+                    <span class="unit" aria-hidden="true">€</span>
+                </div>
+                <p class="help" id="f-amount-help">Mindestens 25,00 €, höchstens 10.000,00 €</p>
+                @{ FieldErrors(InputFields.MonthlyAmount, "f-amount-error"); }
+            </div>
+
+            <div class="field">
+                <label for="f-day">Ausführungstag</label>
+                <select id="f-day" name="Form.ExecutionDay"
+                        aria-describedby="@Describe(InputFields.ExecutionDay, "f-day-help", "f-day-error")"
+                        aria-invalid="@(Model.HasIssue(InputFields.ExecutionDay) ? "true" : null)">
+                    @foreach (var day in Model.ExecutionDays)
+                    {
+                        var value = day.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        <option value="@value" selected="@(form.ExecutionDay == value)">@(day). des Monats</option>
+                    }
+                </select>
+                <p class="help" id="f-day-help">Den 1., 15. und 28. gibt es in jedem Monat.</p>
+                @{ FieldErrors(InputFields.ExecutionDay, "f-day-error"); }
+            </div>
+
+            <div class="field">
+                <label for="f-date">Gültig frühestens ab</label>
+                <input id="f-date" type="date" name="Form.RequestedFrom" value="@form.RequestedFrom"
+                       aria-describedby="@Describe(InputFields.RequestedFrom, "f-date-help", "f-date-error")"
+                       aria-invalid="@(Model.HasIssue(InputFields.RequestedFrom) ? "true" : null)" />
+                <p class="help" id="f-date-help">Ihr Wunschdatum. Den tatsächlichen ersten Ausführungstermin ermittelt FundFlow.</p>
+                @{ FieldErrors(InputFields.RequestedFrom, "f-date-error"); }
+            </div>
+        </div>
+
+        <fieldset class="allocations" aria-describedby="f-alloc-help">
+            <legend>Fondsaufteilung</legend>
+            <p class="help" id="f-alloc-help">1 bis 5 Fonds in ganzen Prozent, zusammen 100 %. Ein entfernter Fonds wird nicht verkauft – die Änderung betrifft nur künftige Einzahlungen.</p>
+            @{ FieldErrors(InputFields.Allocations, "f-alloc-error"); }
+
+            <ol class="allocation-rows" data-allocation-rows data-max-rows="@FundFlow.Web.Pages.Sparplan.AendernModel.MaxRows">
+                @for (var i = 0; i < form.Allocations.Count; i++)
+                {
+                    var row = form.Allocations[i];
+                    var fundField = InputFields.AllocationInstrument(i);
+                    var pctField = InputFields.AllocationPercentage(i);
+                    <li class="allocation-row" data-allocation-row>
+                        <div class="allocation-row__fund">
+                            <label for="f-alloc-@i-fund" class="visually-hidden">Fonds @(i + 1)</label>
+                            <select id="f-alloc-@i-fund" name="Form.Allocations[@i].InstrumentId" data-field="InstrumentId"
+                                    aria-invalid="@(Model.HasIssue(fundField) ? "true" : null)">
+                                <option value="">Fonds wählen</option>
+                                @foreach (var instrument in FundFlow.Web.Pages.Sparplan.AendernModel.EligibleInstruments)
+                                {
+                                    <option value="@instrument.InstrumentId" selected="@(row.InstrumentId == instrument.InstrumentId)">@instrument.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="allocation-row__pct input-unit">
+                            <label for="f-alloc-@i-pct" class="visually-hidden">Anteil Fonds @(i + 1) in Prozent</label>
+                            <input id="f-alloc-@i-pct" name="Form.Allocations[@i].Percentage" value="@row.Percentage" inputmode="numeric" autocomplete="off"
+                                   data-field="Percentage" data-percentage aria-invalid="@(Model.HasIssue(pctField) ? "true" : null)" />
+                            <span class="unit" aria-hidden="true">%</span>
+                        </div>
+                        <button type="submit" class="button button--icon" formaction="?handler=RemoveRow" name="index" value="@i"
+                                formnovalidate data-remove-row aria-label="Fonds @(i + 1) entfernen">Entfernen</button>
+                        @{ FieldErrors(fundField, $"f-alloc-{i}-fund-error"); FieldErrors(pctField, $"f-alloc-{i}-pct-error"); }
+                    </li>
+                }
+            </ol>
+
+            <template data-allocation-template>
+                <li class="allocation-row" data-allocation-row>
+                    <div class="allocation-row__fund">
+                        <label class="visually-hidden">Fonds</label>
+                        <select data-field="InstrumentId">
+                            <option value="">Fonds wählen</option>
+                            @foreach (var instrument in FundFlow.Web.Pages.Sparplan.AendernModel.EligibleInstruments)
+                            {
+                                <option value="@instrument.InstrumentId">@instrument.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="allocation-row__pct input-unit">
+                        <label class="visually-hidden">Anteil in Prozent</label>
+                        <input inputmode="numeric" autocomplete="off" data-field="Percentage" data-percentage />
+                        <span class="unit" aria-hidden="true">%</span>
+                    </div>
+                    <button type="submit" class="button button--icon" formaction="?handler=RemoveRow" name="index" formnovalidate data-remove-row>Entfernen</button>
+                </li>
+            </template>
+
+            <div class="allocation-footer">
+                @{
+                    var sum = Model.CurrentSum();
+                    var sumState = sum is null ? "unknown" : sum == 100 ? "ok" : "off";
+                }
+                <button type="submit" class="button button--secondary" formaction="?handler=AddRow" formnovalidate data-add-row
+                        hidden="@(form.Allocations.Count >= FundFlow.Web.Pages.Sparplan.AendernModel.MaxRows)">Fonds hinzufügen</button>
+                <p class="sum sum--@sumState" data-sum aria-live="polite">
+                    Summe <output data-sum-value>@(sum is null ? "–" : sum.Value.ToString("0.##", System.Globalization.CultureInfo.GetCultureInfo("de-DE")) + " %")</output>
+                </p>
+            </div>
+        </fieldset>
+
+        <div class="actions">
+            <button type="submit" class="button button--primary">Änderung prüfen</button>
+            <a class="button button--quiet" asp-page="/Sparplan/Index">Abbrechen</a>
+        </div>
+    </form>
+}
+else
+{
+    var prepared = Model.Prepared!;
+    var schedule = prepared.Schedule;
+
+    <header class="page-head">
+        <h1>Änderung prüfen und bestätigen</h1>
+        <p class="lead">Noch ist nichts gespeichert. Prüfen Sie die Angaben und senden Sie den Auftrag ab.</p>
+    </header>
+
+    @if (Model.EffectiveDateChanged)
+    {
+        <p class="banner banner--warning" role="alert">Der Wirksamkeitstermin hat sich seit Ihrer letzten Prüfung geändert, weil inzwischen der Annahmeschluss überschritten ist. Bitte bestätigen Sie den neuen Termin.</p>
+    }
+
+    <section class="panel effective" aria-labelledby="effective-heading">
+        <h2 id="effective-heading" class="effective__label">Wirksam ab</h2>
+        <p class="effective__date">@Display.Date(schedule.EffectiveDate)</p>
+        <p class="effective__detail">
+            Erste Ausführung mit den neuen Konditionen. Ihr Wunschdatum: @Display.Date(prepared.Change.RequestedFrom).
+            <span class="rule">BR-07</span>
+        </p>
+        @if (schedule.ShiftHint is { } hint)
+        {
+            <p class="banner banner--hint">@hint</p>
+        }
+    </section>
+
+    @if (prepared.ReplacesRequestNumber is { } replaces)
+    {
+        <p class="banner banner--hint">@Display.Text(RuleMessages.ReplacesOpenRequest(replaces), HtmlEncoder) <span class="rule">BR-16</span></p>
+    }
+
+    <section class="panel" aria-labelledby="changes-heading">
+        <h2 id="changes-heading">Ihre Änderungen gegenüber dem gültigen Sparplan</h2>
+        <table class="table table--changes">
+            <thead>
+                <tr><th scope="col">Angabe</th><th scope="col">Bisher</th><th scope="col">Neu</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var change in prepared.Changes)
+                {
+                    <tr>
+                        <th scope="row">@Display.Text(change.FieldName, HtmlEncoder)</th>
+                        <td data-label="Bisher">@change.OldValue</td>
+                        <td data-label="Neu"><strong>@change.NewValue</strong></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <p class="note">Bestehende Fondsbestände bleiben unverändert. Die Änderung gilt nur für künftige Ausführungen.</p>
+    </section>
+
+    <form method="post" class="actions">
+        <input type="hidden" name="Form.MonthlyAmount" value="@form.MonthlyAmount" />
+        <input type="hidden" name="Form.ExecutionDay" value="@form.ExecutionDay" />
+        <input type="hidden" name="Form.RequestedFrom" value="@form.RequestedFrom" />
+        @for (var i = 0; i < form.Allocations.Count; i++)
+        {
+            <input type="hidden" name="Form.Allocations[@i].InstrumentId" value="@form.Allocations[i].InstrumentId" />
+            <input type="hidden" name="Form.Allocations[@i].Percentage" value="@form.Allocations[i].Percentage" />
+        }
+        <input type="hidden" name="ConfirmedEffectiveDate" value="@Model.ConfirmedEffectiveDate" />
+
+        <button type="submit" class="button button--primary" formaction="?handler=Submit">Auftrag absenden</button>
+        <button type="submit" class="button button--secondary" formaction="?handler=Edit">Zurück zur Bearbeitung</button>
+    </form>
+}
+
+@section Scripts {
+    <script src="~/js/allocation.js" asp-append-version="true"></script>
+}

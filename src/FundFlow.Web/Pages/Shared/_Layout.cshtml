@@ -3,20 +3,44 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
     <title>@ViewData["Title"] – FundFlow</title>
+    <link rel="preload" href="~/fonts/dmsans-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="~/fonts/instrumentsans-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
+@{
+    var nav = ViewData["Nav"] as string;
+    string? Current(string key) => nav == key ? "page" : null;
+}
 <body>
+    <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
     <header class="site-header">
-        <a class="brand" asp-page="/Index">FundFlow</a>
+        <div class="container site-header__inner">
+            <a class="brand" asp-page="/Index" aria-current="@Current("start")">
+                <span class="brand__mark" aria-hidden="true"></span>FundFlow
+            </a>
+            <nav aria-label="Hauptnavigation">
+                <ul class="nav">
+                    <li><a asp-page="/Sparplan/Index" aria-current="@Current("sparplan")">Sparplan</a></li>
+                    <li><a asp-page="/Auftraege/Index" aria-current="@Current("auftraege")">Aufträge</a></li>
+                    <li><a asp-page="/Testansicht" aria-current="@Current("testansicht")">Testansicht</a></li>
+                    <li><a asp-page="/Ueber" aria-current="@Current("ueber")">Über das Projekt</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
-    <main class="content">
+    <main id="main" class="container content">
         @RenderBody()
     </main>
 
     <footer class="site-footer">
-        Unabhängiger Demonstrator · Fiktive Daten · Keine Anlageberatung
+        <div class="container">
+            <p>FundFlow ist ein unabhängiger Demonstrator mit fiktiven Daten. Keine Anlageberatung, keine echten Wertpapiergeschäfte.</p>
+            <p><a asp-page="/Ueber">Über das Projekt</a></p>
+        </div>
     </footer>
 
     @await RenderSectionAsync("Scripts", required: false)

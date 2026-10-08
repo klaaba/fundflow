@@ -1,0 +1,100 @@
+@page
+@model FundFlow.Web.Pages.TestansichtModel
+@using FundFlow.Web.Demo
+@{
+    ViewData["Title"] = "Testansicht";
+    ViewData["Nav"] = "testansicht";
+    var total = Model.Run.Results.Count;
+    var allPassed = Model.PassedCount == total;
+}
+
+<header class="page-head">
+    <h1>Testansicht</h1>
+    <p class="lead">
+        Die 30 Testfälle aus dem Fachkonzept, ausgeführt gegen dieselbe Fachlogik wie das Formular.
+        Jeder Fall läuft mit festem Datum und eigenen Daten – Ihr Demo-Depot bleibt unberührt.
+    </p>
+</header>
+
+<section class="test-summary test-summary--@(allPassed ? "ok" : "fail")" aria-live="polite">
+    <p class="test-summary__count"><span class="figure">@Model.PassedCount</span> von @total Testfällen erfüllt</p>
+    <p class="note">Ausgeführt am @Display.DateTime(Model.Run.ExecutedAt). Dieselben Fälle laufen als automatisierte Tests bei jedem Build.</p>
+</section>
+
+<section aria-labelledby="coverage-heading" class="panel">
+    <h2 id="coverage-heading">Regelabdeckung</h2>
+    <p class="note">Jede fachliche Regel ist mindestens einem Testfall zugeordnet.</p>
+    <table class="table table--coverage">
+        <thead>
+            <tr><th scope="col">Regel</th><th scope="col">Testfälle</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var (rule, cases) in Model.Coverage)
+            {
+                <tr>
+                    <th scope="row"><span class="rule">@rule</span></th>
+                    <td>
+                        @foreach (var result in cases)
+                        {
+                            <a class="case-link case-link--@(result.Passed ? "ok" : "fail")" href="#@result.Scenario.Id.ToLowerInvariant()">@result.Scenario.Id</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+<section aria-labelledby="cases-heading">
+    <h2 id="cases-heading">Testfälle</h2>
+    <ol class="cases">
+        @foreach (var result in Model.Run.Results)
+        {
+            var scenario = result.Scenario;
+            <li id="@scenario.Id.ToLowerInvariant()" class="case case--@(result.Passed ? "ok" : "fail")">
+                <details>
+                    <summary>
+                        <span class="case__id">@scenario.Id</span>
+                        <span class="case__title">@scenario.Title</span>
+                        <span class="case__rules">
+                            @foreach (var rule in scenario.Rules)
+                            {
+                                <span class="rule">@rule</span>
+                            }
+                        </span>
+                        <span class="case__result">@(result.Passed ? "erfüllt" : "nicht erfüllt")</span>
+                    </summary>
+
+                    <dl class="facts facts--list case__facts">
+                        <div><dt>Ausgangsstand</dt><dd>@FundFlow.Web.Pages.TestansichtModel.StartLabel(scenario.Start)</dd></div>
+                        <div><dt>Referenzdatum</dt><dd>@Display.Date(scenario.ReferenceDate)</dd></div>
+                        <div><dt>Eingabe</dt><dd>@Display.Text(scenario.InputDescription, HtmlEncoder)</dd></div>
+                        <div><dt>Erwartet</dt><dd>@Display.Text(scenario.ExpectedDescription, HtmlEncoder)</dd></div>
+                    </dl>
+
+                    <table class="table table--checks">
+                        <thead>
+                            <tr>
+                                <th scope="col">Prüfung</th>
+                                <th scope="col">Erwartet</th>
+                                <th scope="col">Tatsächlich</th>
+                                <th scope="col"><span class="visually-hidden">Ergebnis</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var check in result.Checks)
+                            {
+                                <tr class="check check--@(check.Passed ? "ok" : "fail")">
+                                    <th scope="row">@check.Name</th>
+                                    <td data-label="Erwartet">@Display.Text(check.Expected, HtmlEncoder)</td>
+                                    <td data-label="Tatsächlich">@Display.Text(check.Actual, HtmlEncoder)</td>
+                                    <td class="check__mark">@(check.Passed ? "✓" : "✗")<span class="visually-hidden">@(check.Passed ? " bestanden" : " fehlgeschlagen")</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </details>
+            </li>
+        }
+    </ol>
+</section>

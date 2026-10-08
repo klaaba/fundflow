@@ -1,0 +1,113 @@
+@page
+@model FundFlow.Web.Pages.Sparplan.IndexModel
+@using FundFlow.Web.Demo
+@{
+    ViewData["Title"] = "Sparplan";
+    ViewData["Nav"] = "sparplan";
+    var current = Model.State.CurrentVersion;
+    var open = Model.State.OpenRequest;
+}
+
+@if (Model.Notice is not null)
+{
+    <p class="banner banner--success" role="status">@Model.Notice</p>
+}
+
+<header class="page-head">
+    <h1>Sparplan @Model.State.Plan.PlanNumber</h1>
+    <p class="lead">Depot @Model.Portfolio.DepotNumber von @Model.Customer.Name. Alle Daten sind erfunden.</p>
+</header>
+
+@if (open is not null)
+{
+    <aside class="banner banner--hint">
+        <p>
+            <strong>Geplante Änderung:</strong> Auftrag
+            <a asp-page="/Auftraege/Detail" asp-route-number="@open.RequestNumber">@open.RequestNumber</a>
+            wird zum @Display.Date(open.EffectiveDate) wirksam.
+        </p>
+        <p>Ein neuer Änderungsauftrag ersetzt diesen offenen Auftrag. Eine separate Stornierung ist in dieser Demo-Version nicht möglich.</p>
+    </aside>
+}
+
+<div class="plan-layout">
+    <section class="panel plan-current" aria-labelledby="current-heading">
+        <h2 id="current-heading">Gültig seit @Display.Date(current.ValidFrom)</h2>
+
+        <dl class="facts">
+            <div>
+                <dt>Monatliche Sparrate</dt>
+                <dd class="figure">@Display.Amount(current.MonthlyAmount)</dd>
+            </div>
+            <div>
+                <dt>Ausführungstag</dt>
+                <dd class="figure">@(current.ExecutionDay). des Monats</dd>
+            </div>
+        </dl>
+
+        <h3>Fondsaufteilung</h3>
+        <table class="table">
+            <thead>
+                <tr><th scope="col">Fonds</th><th scope="col" class="num">Anteil</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var allocation in current.Allocations.OrderByDescending(a => a.Percentage))
+                {
+                    <tr>
+                        <td>
+                            @Display.InstrumentName(allocation.InstrumentId)
+                            <span class="sub">@Display.IsinLike(allocation.InstrumentId)</span>
+                        </td>
+                        <td class="num">@allocation.Percentage %</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="actions">
+            <a class="button button--primary" asp-page="/Sparplan/Aendern">Sparplan ändern</a>
+        </div>
+    </section>
+
+    <section class="panel plan-versions" aria-labelledby="versions-heading">
+        <h2 id="versions-heading">Versionen</h2>
+        <p class="note">Jede Änderung erzeugt eine neue Version. Ältere Versionen bleiben erhalten, ersetzte Planungen werden verworfen, nicht gelöscht.</p>
+
+        <ol class="timeline" reversed>
+            @foreach (var version in Model.Versions)
+            {
+                var state = Display.StateOf(version, Model.Today);
+                <li class="timeline__item timeline__item--@state.ToString().ToLowerInvariant()">
+                    <div class="timeline__head">
+                        <span class="timeline__title">Version @version.VersionNo</span>
+                        <span class="chip chip--@state.ToString().ToLowerInvariant()">@Display.Label(state)</span>
+                    </div>
+                    <p class="timeline__period">
+                        @Display.Date(version.ValidFrom) bis @(version.ValidTo is { } to ? Display.Date(to) : "unbefristet")
+                    </p>
+                    <p class="timeline__terms">
+                        @Display.Text($"{Display.Amount(version.MonthlyAmount)} am {version.ExecutionDay}., " +
+                            string.Join(" / ", version.Allocations.OrderBy(a => a.InstrumentId).Select(a => $"{a.InstrumentId} {a.Percentage} %")), HtmlEncoder)
+                    </p>
+                    <p class="timeline__source">
+                        @if (Model.RequestNumberByVersion.TryGetValue(version.Id, out var number))
+                        {
+                            <text>Aus Auftrag <a asp-page="/Auftraege/Detail" asp-route-number="@number">@number</a></text>
+                        }
+                        else
+                        {
+                            <text>Erstanlage</text>
+                        }
+                    </p>
+                </li>
+            }
+        </ol>
+    </section>
+</div>
+
+<section class="reset">
+    <form method="post" asp-page-handler="Reset">
+        <p class="note">Stand der Demo: @Display.Date(Model.Today). Ihre Änderungen sind nur für Sie sichtbar und werden nach 24 Stunden ohne Aktivität gelöscht.</p>
+        <button type="submit" class="button button--quiet">Demo zurücksetzen</button>
+    </form>
+</section>

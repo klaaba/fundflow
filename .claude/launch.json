@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "fundflow-web",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "src/FundFlow.Web", "--launch-profile", "http"],
+      "port": 5085
+    }
+  ]
+}

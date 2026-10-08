@@ -33,7 +33,19 @@ dotnet test
 dotnet run --project src/FundFlow.Web
 ```
 
-Die Anwendung ist danach unter <http://localhost:5085> erreichbar.
+Die Anwendung ist danach unter <http://localhost:5085> erreichbar. Die SQLite-Datenbank legt sie beim ersten Start unter `src/FundFlow.Web/App_Data/` an.
+
+## Seiten
+
+| Seite | Inhalt |
+|---|---|
+| Sparplan | Gültige Konditionen, offene Änderung, Versionsleiste, „Demo zurücksetzen“ |
+| Sparplan ändern | Erfassen, Prüfen und bestätigen – mit Regelkennung an jeder Meldung |
+| Aufträge | Übersicht und Detail mit Änderungsprotokoll und Statusverlauf (Sicht von Operations) |
+| Testansicht | TC-01 bis TC-30 mit Einzelprüfungen und Regelabdeckung |
+| Über das Projekt | Hintergrund, Vorgehen, Abgrenzung |
+
+Gestaltung: Farben und Schriften von [inspiras.de](https://www.inspiras.de); Schriften lokal eingebunden (Instrument Sans, DM Sans – SIL Open Font License, siehe `src/FundFlow.Web/wwwroot/fonts`).
 
 ## Projektstruktur
 
@@ -55,7 +67,7 @@ tests/FundFlow.Tests/       automatisierte Tests
 | 2 | Wirksamkeitstermin | erledigt |
 | 3 | Datenhaltung und Auftrag | erledigt |
 | 4 | Testszenarien | erledigt |
-| 5 | Oberfläche | offen |
+| 5 | Oberfläche | erledigt |
 | 6 | Fehlerbeispiel DEF-001 | offen |
 | 7 | Dokumentation und Feinschliff | offen |
 | 8 | Veröffentlichung | offen |

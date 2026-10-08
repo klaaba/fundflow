@@ -1,19 +1,44 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace FundFlow.Tests.Web;
 
-public class SmokeTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+public sealed class SmokeTests(FundFlowWebFactory factory) : IClassFixture<FundFlowWebFactory>
 {
-    [Fact]
-    public async Task Startseite_ist_erreichbar_und_zeigt_Hinweis_auf_fiktive_Daten()
+    [Theory]
+    [InlineData("/", "Keine Anlageberatung")]
+    [InlineData("/sparplan", "Sparplan SP-000001")]
+    [InlineData("/sparplan/aendern", "Sparplan ändern")]
+    [InlineData("/auftraege", "Noch keine Aufträge")]
+    [InlineData("/testansicht", "30</span> von 30 Testfällen erfüllt")]
+    [InlineData("/ueber", "Über das Projekt")]
+    public async Task Seite_ist_erreichbar(string url, string expectedText)
     {
         var client = factory.CreateClient();
 
-        var response = await client.GetAsync("/");
+        var response = await client.GetAsync(url);
         var html = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("Keine Anlageberatung", html);
+        Assert.Contains(expectedText, html);
+    }
+
+    [Fact]
+    public async Task Unbekannter_Auftrag_ergibt_404()
+    {
+        var response = await factory.CreateClient().GetAsync("/auftraege/CR-2026-999999");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Demo_Sitzung_wird_per_Cookie_vergeben()
+    {
+        var client = factory.CreateClient(new() { HandleCookies = false });
+
+        var response = await client.GetAsync("/sparplan");
+
+        var cookie = Assert.Single(response.Headers.GetValues("Set-Cookie"), c => c.StartsWith("fundflow_demo=", StringComparison.Ordinal));
+        Assert.Contains("httponly", cookie, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("samesite=lax", cookie, StringComparison.OrdinalIgnoreCase);
     }
 }

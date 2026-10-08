@@ -486,3 +486,5 @@ $RECYCLE.BIN/
 *.db-shm
 *.db-wal
 .DS_Store
+
+App_Data/

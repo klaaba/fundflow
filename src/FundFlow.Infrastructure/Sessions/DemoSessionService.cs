@@ -29,7 +29,19 @@ public sealed class DemoSessionService(FundFlowDbContext db, TimeProvider timePr
             session.LastSeenAt = now;
         }
 
-        await db.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException) when (session is null)
+        {
+            // Zwei gleichzeitige erste Anfragen derselben Sitzung: Hat die andere A0 bereits angelegt, ist alles gut.
+            db.ChangeTracker.Clear();
+            if (!await db.DemoSessions.AnyAsync(s => s.Id == db.SessionId, cancellationToken))
+            {
+                throw;
+            }
+        }
     }
 
     /// <summary>„Demo zurücksetzen“: alle Daten der Sitzung löschen und Ausgangsstand A0 neu anlegen.</summary>

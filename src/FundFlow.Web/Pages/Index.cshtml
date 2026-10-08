@@ -1,13 +1,49 @@
 @page
 @model IndexModel
 @{
-    ViewData["Title"] = "Start";
+    ViewData["Title"] = "Fonds-Sparplan ändern";
+    ViewData["Nav"] = "start";
 }
 
-<h1>FundFlow</h1>
-<p>Business-Analysis-Prototyp für Änderungen an Fonds-Sparplänen.</p>
-<p class="note">
-    FundFlow ist ein unabhängiger Demonstrator für die fachliche Analyse und technische Umsetzung
-    von Änderungsaufträgen zu fiktiven Fonds- und ETF-Sparplänen. Die Anwendung verwendet ausschließlich
-    Beispieldaten und dient weder der Anlageberatung noch der Durchführung realer Wertpapiergeschäfte.
-</p>
+<section class="intro">
+    <div class="intro__text">
+        <h1>Ein Sparplan ändert sich. Was muss das System dabei leisten?</h1>
+        <p class="lead">
+            FundFlow spielt einen Änderungsauftrag zu einem Fonds-Sparplan vollständig durch: von der Eingabe
+            über die fachliche Prüfung und den Annahmeschluss bis zum versionierten Auftrag mit Statusverlauf.
+        </p>
+        <div class="actions">
+            <a class="button button--primary" asp-page="/Sparplan/Index">Demo starten</a>
+            <a class="button button--secondary" asp-page="/Testansicht">Testfälle ansehen</a>
+        </div>
+        <p class="note">Fiktive Kundin, fiktive Fonds, keine Anlageberatung.</p>
+    </div>
+
+    <figure class="intro__case" aria-label="Beispiel aus der Demo">
+        <p class="intro__case-title">Auftrag vom 13.10.2026</p>
+        <dl class="intro__case-facts">
+            <div><dt>Sparrate</dt><dd>150,00 € → 200,00 €</dd></div>
+            <div><dt>Gewünscht ab</dt><dd>13.10.2026</dd></div>
+            <div><dt>Wirksam ab</dt><dd class="intro__case-result">15.11.2026</dd></div>
+        </dl>
+        <figcaption>
+            Der Annahmeschluss für den 15.10. lag am 12.10. Die Ausführung im Oktober läuft deshalb noch mit 150,00 €.
+            <span class="rule">BR-07</span>
+        </figcaption>
+    </figure>
+</section>
+
+<section class="pillars" aria-label="Was FundFlow zeigt">
+    <div>
+        <h2>Fachliche Regeln</h2>
+        <p>17 Regeln von der Mindestsparrate bis zur Ersetzung offener Aufträge. Jede Meldung nennt ihre Regel.</p>
+    </div>
+    <div>
+        <h2>Versionen und Status</h2>
+        <p>Jede Änderung erzeugt eine neue Sparplan-Version. Nichts wird überschrieben, alles bleibt nachvollziehbar.</p>
+    </div>
+    <div>
+        <h2>Testfälle</h2>
+        <p>30 Testfälle mit Grenzwerten, ausführbar in der Testansicht und bei jedem Build.</p>
+    </div>
+</section>

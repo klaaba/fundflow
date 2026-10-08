@@ -1,0 +1,98 @@
+@page "/auftraege/{number}"
+@model FundFlow.Web.Pages.Auftraege.DetailModel
+@using FundFlow.Web.Demo
+@{
+    var request = Model.Order.Request;
+    ViewData["Title"] = $"Auftrag {request.RequestNumber}";
+    ViewData["Nav"] = "auftraege";
+}
+
+@if (Model.JustCreated)
+{
+    <section class="banner banner--success" role="status">
+        <p><strong>Auftrag angelegt.</strong> Ihre Änderung wird zum @Display.Date(request.EffectiveDate) wirksam.</p>
+        @if (Model.ShiftHint is { } hint)
+        {
+            <p>@hint</p>
+        }
+    </section>
+}
+
+<header class="page-head order-head">
+    <p class="order-head__kind">Änderungsauftrag</p>
+    <h1 class="order-head__number">@request.RequestNumber</h1>
+    <p><span class="chip chip--@request.Status.ToString().ToLowerInvariant()">@Display.Status(request.Status)</span></p>
+</header>
+
+<div class="order-layout">
+    <section class="panel" aria-labelledby="facts-heading">
+        <h2 id="facts-heading">Eckdaten</h2>
+        <dl class="facts facts--list">
+            <div><dt>Angelegt</dt><dd>@Display.DateTime(request.CreatedAt)</dd></div>
+            <div><dt>Wunschdatum</dt><dd>@Display.Date(request.RequestedFrom)</dd></div>
+            <div>
+                <dt>Wirksam ab</dt>
+                <dd>
+                    @Display.Date(request.EffectiveDate)
+                    @if (request.EffectiveDateShifted)
+                    {
+                        <span class="sub">wegen Annahmeschluss verschoben</span>
+                    }
+                </dd>
+            </div>
+            <div>
+                <dt>Neue Version</dt>
+                <dd>Version @request.ResultingVersion!.VersionNo@(request.ResultingVersion.IsDiscarded ? " (verworfen)" : "")</dd>
+            </div>
+            @if (Model.Order.ReplacesNumber is { } replaces)
+            {
+                <div><dt>Ersetzt</dt><dd><a asp-page="/Auftraege/Detail" asp-route-number="@replaces">@replaces</a></dd></div>
+            }
+            @if (Model.Order.ReplacedByNumber is { } by)
+            {
+                <div><dt>Ersetzt durch</dt><dd><a asp-page="/Auftraege/Detail" asp-route-number="@by">@by</a></dd></div>
+            }
+        </dl>
+    </section>
+
+    <section class="panel" aria-labelledby="log-heading">
+        <h2 id="log-heading">Änderungsprotokoll</h2>
+        <p class="note">Verglichen mit dem Sparplan, der beim Anlegen gültig war.</p>
+        <table class="table table--changes">
+            <thead>
+                <tr><th scope="col">Angabe</th><th scope="col">Bisher</th><th scope="col">Neu</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in request.ChangeLog.OrderBy(e => e.Id))
+                {
+                    <tr>
+                        <th scope="row">@Display.Text(entry.FieldName, HtmlEncoder)</th>
+                        <td data-label="Bisher">@entry.OldValue</td>
+                        <td data-label="Neu"><strong>@entry.NewValue</strong></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<section class="panel" aria-labelledby="history-heading">
+    <h2 id="history-heading">Statusverlauf</h2>
+    <ol class="history">
+        @foreach (var entry in request.StatusHistory.OrderBy(h => h.Id))
+        {
+            <li>
+                <span class="history__time">@Display.DateTime(entry.ChangedAt)</span>
+                <span class="history__change">
+                    @(entry.FromStatus is { } from ? $"{Display.Status(from)} → " : "")<strong>@Display.Status(entry.ToStatus)</strong>
+                </span>
+                <span class="history__reason">@Display.Text(entry.Reason, HtmlEncoder)</span>
+            </li>
+        }
+    </ol>
+</section>
+
+<p class="actions">
+    <a class="button button--secondary" asp-page="/Sparplan/Index">Zum Sparplan</a>
+    <a class="button button--quiet" asp-page="/Auftraege/Index">Alle Aufträge</a>
+</p>

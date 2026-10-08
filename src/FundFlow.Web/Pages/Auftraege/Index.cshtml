@@ -1,0 +1,60 @@
+@page
+@model FundFlow.Web.Pages.Auftraege.IndexModel
+@using FundFlow.Web.Demo
+@{
+    ViewData["Title"] = "Aufträge";
+    ViewData["Nav"] = "auftraege";
+}
+
+<header class="page-head">
+    <h1>Aufträge</h1>
+    <p class="lead">Die Sicht von Operations: alle Änderungsaufträge Ihres Demo-Depots mit Status und Wirksamkeitstermin.</p>
+</header>
+
+@if (Model.Orders.Count == 0)
+{
+    <section class="panel empty">
+        <p>Noch keine Aufträge. Ändern Sie den Sparplan, um einen Auftrag anzulegen.</p>
+        <a class="button button--primary" asp-page="/Sparplan/Aendern">Sparplan ändern</a>
+    </section>
+}
+else
+{
+    <table class="table table--orders">
+        <thead>
+            <tr>
+                <th scope="col">Auftrag</th>
+                <th scope="col">Angelegt</th>
+                <th scope="col">Status</th>
+                <th scope="col">Wirksam ab</th>
+                <th scope="col">Verweis</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                var request = order.Request;
+                <tr>
+                    <th scope="row"><a asp-page="/Auftraege/Detail" asp-route-number="@request.RequestNumber">@request.RequestNumber</a></th>
+                    <td data-label="Angelegt">@Display.DateTime(request.CreatedAt)</td>
+                    <td data-label="Status"><span class="chip chip--@request.Status.ToString().ToLowerInvariant()">@Display.Status(request.Status)</span></td>
+                    <td data-label="Wirksam ab">@Display.Date(request.EffectiveDate)</td>
+                    <td data-label="Verweis">
+                        @if (order.ReplacedByNumber is { } by)
+                        {
+                            <text>Ersetzt durch <a asp-page="/Auftraege/Detail" asp-route-number="@by">@by</a></text>
+                        }
+                        else if (order.ReplacesNumber is { } replaces)
+                        {
+                            <text>Ersetzt <a asp-page="/Auftraege/Detail" asp-route-number="@replaces">@replaces</a></text>
+                        }
+                        else
+                        {
+                            <span class="sub">–</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
