@@ -104,7 +104,7 @@ Die Schritte 1–6 aus Fachkonzept 8.4 sind im Code von `ChangeRequestService.Tr
 | Keine Dienste Dritter | Schriften, Skripte und Stile vom eigenen Server |
 | Datensparsamkeit | Sitzungsdaten nach 24 Stunden Inaktivität gelöscht |
 | Suchmaschinen | `noindex` – die Demo wird gezielt verlinkt, nicht über Suchmaschinen gefunden |
-| Transportverschlüsselung | übernimmt der Reverse Proxy auf dem Server (Etappe 8) |
+| Transportverschlüsselung | Caddy mit automatischem Zertifikat, HSTS und Sicherheits-Headern; Cookies mit `Secure` ([Betrieb](05_Betrieb.md)) |
 
 ## 9. Technische Entscheidungen
 

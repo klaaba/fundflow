@@ -1,0 +1,21 @@
+# FundFlow auf dem Server (docs/05_Betrieb.md)
+services:
+  fundflow:
+    build: .
+    image: fundflow:latest
+    container_name: fundflow
+    restart: unless-stopped
+    # Nur lokal erreichbar – von außen ausschließlich über Caddy mit HTTPS.
+    ports:
+      - "127.0.0.1:8085:8080"
+    volumes:
+      - fundflow-data:/data
+    # Anwendungsprotokolle enthalten keine IP-Adressen; Größe begrenzt.
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+volumes:
+  fundflow-data:

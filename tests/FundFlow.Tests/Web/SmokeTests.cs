@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FundFlow.Tests.Web;
 
@@ -30,6 +31,23 @@ public sealed class SmokeTests(FundFlowWebFactory factory) : IClassFixture<FundF
         var response = await factory.CreateClient().GetAsync("/auftraege/CR-2026-999999");
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Hinter_dem_Proxy_erhalten_Cookies_das_Merkmal_Secure()
+    {
+        // Wie im Container: Caddy beendet TLS und meldet das Schema per X-Forwarded-Proto.
+        var behindProxy = factory.WithWebHostBuilder(b => b.UseSetting("FORWARDEDHEADERS_ENABLED", "true"));
+        var client = behindProxy.CreateClient(new() { HandleCookies = false });
+        var request = new HttpRequestMessage(HttpMethod.Get, "/sparplan/aendern");
+        request.Headers.Add("X-Forwarded-Proto", "https");
+
+        var response = await client.SendAsync(request);
+
+        var cookies = response.Headers.GetValues("Set-Cookie").ToList();
+        Assert.Contains(cookies, c => c.StartsWith("fundflow_demo=", StringComparison.Ordinal));
+        Assert.Contains(cookies, c => c.StartsWith(".AspNetCore.Antiforgery.", StringComparison.Ordinal));
+        Assert.All(cookies, c => Assert.Contains("secure", c, StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]

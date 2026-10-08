@@ -41,6 +41,12 @@ dotnet run --project src/FundFlow.Web
 dotnet ef migrations add <Name> --project src/FundFlow.Infrastructure --startup-project src/FundFlow.Infrastructure --output-dir Persistence/Migrations
 ```
 
+## Betrieb
+
+- Öffentliche Demo: https://fundflow.inspiras.de – Container hinter Caddy, siehe `docs/05_Betrieb.md`.
+- Aktualisieren: hochladen, dann auf dem Server `bash deploy/update.sh` (Tests laufen beim Bauen).
+- Auf dem Server nie ohne Rückfrage an `/etc/caddy/Caddyfile` oder anderen Diensten (n8n, RStudio) ändern.
+
 ## Datenhaltung
 
 - Eine gemeinsame SQLite-Datenbank; sitzungsbezogene Tabellen tragen die Schattenspalte `DemoSessionId` (E-11). Sie ist nicht Teil des fachlichen Modells.

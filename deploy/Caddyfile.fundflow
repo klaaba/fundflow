@@ -1,0 +1,23 @@
+fundflow.inspiras.de {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		X-Robots-Tag "noindex, nofollow"
+		-Server
+	}
+
+	# Zugriffsprotokoll; Löschung nach 7 Tagen übernimmt logrotate (deploy/logrotate-caddy-fundflow).
+	# Cookies und Anmeldedaten schreibt Caddy standardmäßig nicht ins Protokoll.
+	log {
+		output file /var/log/caddy/fundflow-access.log {
+			roll_disabled
+		}
+		format json
+	}
+
+	reverse_proxy 127.0.0.1:8085
+}

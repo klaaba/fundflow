@@ -1,0 +1,12 @@
+# Zugriffsprotokoll von fundflow.inspiras.de: täglich wechseln, höchstens 7 Tage aufbewahren
+# (Datenschutzhinweis: „werden nach 7 Tagen gelöscht“). Ziel: /etc/logrotate.d/caddy-fundflow
+/var/log/caddy/fundflow-access.log {
+    su caddy caddy
+    daily
+    rotate 6
+    maxage 7
+    missingok
+    notifempty
+    compress
+    copytruncate
+}
