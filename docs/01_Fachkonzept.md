@@ -1,10 +1,16 @@
 # FundFlow – Fachkonzept
 
-**Version:** 1.3  
+**Version:** 1.4  
 **Stand:** 8. Oktober 2026  
-**Status:** Fachlich freigegeben – Entscheidungen E-01 bis E-12 und Version 1.3 am 08.10.2026 bestätigt
+**Status:** Version 1.3 fachlich freigegeben (08.10.2026); Änderungen der Version 1.4 zur Freigabe
 
 ## 0. Änderungshistorie
+
+### Version 1.4
+
+| Bereich | Änderung |
+|---|---|
+| Fehlerbeispiel | Abschnitt 13 an den tatsächlich nachgestellten Fehler angepasst: Reproduktion, Ursache und Behebung; Verweis auf den Fehlerbericht `docs/04_Fehlerbericht_DEF-001.md`. |
 
 ### Version 1.3
 
@@ -512,13 +518,13 @@ INS-07 wird in der Oberfläche nicht zur Auswahl angeboten. Er dient dem Nachwei
 
 1. Bestehenden Sparplan öffnen (Ausgangsstand A0).
 2. Zielanteile auf INS-01 60 %, INS-02 30 % und INS-03 8 % setzen.
-3. Änderung absenden.
+3. Formular ohne vorherige Zusammenfassung absenden (verändertes Formular oder direkter Aufruf).
 
 **Erwartetes Ergebnis:** Der Auftrag wird nicht angelegt; das System weist darauf hin, dass die Summe 98 % beträgt.  
-**Tatsächliches Ergebnis:** Der Auftrag wird angelegt.  
-**Ursache:** Die Summenprüfung lief erst nach Vergabe der Auftragsnummer und wurde bei der Anlage nicht ausgewertet.  
-**Behebung:** Alle Validierungen vor Vergabe der Auftragsnummer und vor dem Speichern ausführen (BR-08, Schritt 1).  
-**Nachweis:** Regressionstest TC-04. Der Fehler wird im Repository bewusst nachgestellt, durch den Test aufgedeckt und mit einem eigenen, referenzierten Commit behoben.
+**Tatsächliches Ergebnis:** Der Auftrag wird angelegt. Über die normale Bedienung bleibt der Fehler unsichtbar, weil die Zusammenfassung BR-04 noch prüft.  
+**Ursache:** Die erneute Prüfung beim Absenden (Prozessschritt 6) ließ BR-04 aus, weil die Summe als bereits durch Live-Summe und Zusammenfassung geprüft galt. Beides ist nur Komfort (Abschnitt 8.1).  
+**Behebung:** Ausnahme entfernt; beim Absenden werden alle Regeln geprüft, bevor eine Auftragsnummer vergeben wird (BR-08, Schritt 1).  
+**Nachweis:** TC-04 und TC-27 sowie ein zusätzlicher Regressionstest, der das Formular ohne Zusammenfassung absendet. Der Fehler ist im Repository bewusst nachgestellt, durch die Tests aufgedeckt und in einem eigenen Commit behoben. Einzelheiten: `docs/04_Fehlerbericht_DEF-001.md`.
 
 ## 14. Demo-Betrieb
 

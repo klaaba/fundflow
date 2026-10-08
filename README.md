@@ -68,6 +68,6 @@ tests/FundFlow.Tests/       automatisierte Tests
 | 3 | Datenhaltung und Auftrag | erledigt |
 | 4 | Testszenarien | erledigt |
 | 5 | Oberfläche | erledigt |
-| 6 | Fehlerbeispiel DEF-001 | offen |
+| 6 | Fehlerbeispiel DEF-001 | erledigt |
 | 7 | Dokumentation und Feinschliff | offen |
 | 8 | Veröffentlichung | offen |
