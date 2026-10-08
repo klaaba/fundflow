@@ -51,7 +51,7 @@ tests/FundFlow.Tests/       automatisierte Tests
 | Etappe | Inhalt | Stand |
 |---|---|---|
 | 0 | Grundgerüst | erledigt |
-| 1 | Fachregeln | offen |
+| 1 | Fachregeln | erledigt |
 | 2 | Wirksamkeitstermin | offen |
 | 3 | Datenhaltung und Auftrag | offen |
 | 4 | Testszenarien | offen |
