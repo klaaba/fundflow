@@ -118,7 +118,9 @@ public sealed class ChangeRequestService(FundFlowDbContext db, TimeProvider time
 
         // Schritt 1: erneute Prüfung und Neuberechnung – erst danach wird eine Auftragsnummer vergeben.
         var state = await LoadStateAsync(savingsPlanId, cancellationToken);
-        var preparation = ChangePreparer.Prepare(input, state.ToValidationContext());
+        // Die Summe der Anteile wurde bereits in der Oberfläche (Live-Summe) und in der Zusammenfassung
+        // geprüft – beim Absenden genügt die Prüfung der übrigen Regeln.
+        var preparation = ChangePreparer.Prepare(input, state.ToValidationContext(), checkAllocationSum: false);
 
         if (preparation.Prepared is not { } prepared)
         {

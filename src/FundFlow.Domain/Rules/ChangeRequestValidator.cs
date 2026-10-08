@@ -10,14 +10,17 @@ namespace FundFlow.Domain.Rules;
 /// </summary>
 public static class ChangeRequestValidator
 {
-    public static ValidationResult Validate(ChangeRequestInput input, ValidationContext context)
+    /// <param name="checkAllocationSum">
+    /// <c>false</c>, wenn die Summe bereits geprüft wurde (Live-Summe in der Oberfläche, Zusammenfassung).
+    /// </param>
+    public static ValidationResult Validate(ChangeRequestInput input, ValidationContext context, bool checkAllocationSum = true)
     {
         var issues = new List<ValidationIssue>();
 
         var amount = ValidateMonthlyAmount(input.MonthlyAmount, issues);
         var executionDay = ValidateExecutionDay(input.ExecutionDay, issues);
         var requestedFrom = ValidateRequestedFrom(input.RequestedFrom, context.Today, issues);
-        var allocations = ValidateAllocations(input.Allocations, context.Instruments, issues);
+        var allocations = ValidateAllocations(input.Allocations, context.Instruments, checkAllocationSum, issues);
 
         SavingsPlanTerms? terms = null;
         if (amount is not null && executionDay is not null && allocations is not null)
@@ -109,6 +112,7 @@ public static class ChangeRequestValidator
     private static List<AllocationLine>? ValidateAllocations(
         IReadOnlyList<AllocationInput> lines,
         IReadOnlyDictionary<string, Instrument> instruments,
+        bool checkAllocationSum,
         List<ValidationIssue> issues)
     {
         // BR-11
@@ -178,7 +182,7 @@ public static class ChangeRequestValidator
         }
 
         // BR-04 – nur prüfbar, wenn alle Anteile Zahlen sind.
-        if (sumKnown && sum != SavingsPlanLimits.RequiredAllocationSum)
+        if (checkAllocationSum && sumKnown && sum != SavingsPlanLimits.RequiredAllocationSum)
         {
             issues.Add(new(RuleIds.AllocationSum, InputFields.Allocations, RuleMessages.AllocationSum(sum)));
         }
