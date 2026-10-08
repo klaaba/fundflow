@@ -2,7 +2,7 @@
 
 **Version:** 1.3  
 **Stand:** 8. Oktober 2026  
-**Status:** Version 1.2 fachlich freigegeben (Entscheidungen E-01 bis E-12 am 08.10.2026 bestätigt); Änderungen der Version 1.3 zur Freigabe
+**Status:** Fachlich freigegeben – Entscheidungen E-01 bis E-12 und Version 1.3 am 08.10.2026 bestätigt
 
 ## 0. Änderungshistorie
 

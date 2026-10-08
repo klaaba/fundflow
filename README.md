@@ -53,7 +53,7 @@ tests/FundFlow.Tests/       automatisierte Tests
 | 0 | Grundgerüst | erledigt |
 | 1 | Fachregeln | erledigt |
 | 2 | Wirksamkeitstermin | erledigt |
-| 3 | Datenhaltung und Auftrag | offen |
+| 3 | Datenhaltung und Auftrag | erledigt |
 | 4 | Testszenarien | offen |
 | 5 | Oberfläche | offen |
 | 6 | Fehlerbeispiel DEF-001 | offen |

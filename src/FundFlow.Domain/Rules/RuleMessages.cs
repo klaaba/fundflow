@@ -69,6 +69,11 @@ public static class RuleMessages
     public static string SameAsOpenRequest(string requestNumber) =>
         $"Diese Änderung liegt bereits als offener Auftrag {requestNumber} vor.";
 
+    /// <summary>BR-16 und E-09: Hinweis auf Sparplanseite, Formular und Zusammenfassung.</summary>
+    public static string ReplacesOpenRequest(string requestNumber) =>
+        $"Dieser Auftrag ersetzt den offenen Auftrag {requestNumber}. " +
+        "Eine separate Stornierung ist in dieser Demo-Version nicht möglich.";
+
     public const string AmountFormat =
         "Bitte geben Sie die Sparrate als Betrag ein, z. B. 150,00.";
 

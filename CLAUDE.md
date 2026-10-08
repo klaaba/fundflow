@@ -36,7 +36,16 @@
 dotnet build
 dotnet test
 dotnet run --project src/FundFlow.Web
+
+# neue Migration nach Änderungen am Datenmodell
+dotnet ef migrations add <Name> --project src/FundFlow.Infrastructure --startup-project src/FundFlow.Infrastructure --output-dir Persistence/Migrations
 ```
+
+## Datenhaltung
+
+- Eine gemeinsame SQLite-Datenbank; sitzungsbezogene Tabellen tragen die Schattenspalte `DemoSessionId` (E-11). Sie ist nicht Teil des fachlichen Modells.
+- Abfragen werden automatisch auf die Sitzung gefiltert. `IgnoreQueryFilters()` nur bewusst einsetzen (Auftragsnummern, Aufräumen).
+- Tests nutzen SQLite im Arbeitsspeicher mit den echten Migrationen (`tests/FundFlow.Tests/Infrastructure/TestDatabase.cs`).
 
 ## Darstellung
 
