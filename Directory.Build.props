@@ -1,0 +1,12 @@
+<Project>
+  <!-- Gemeinsame Einstellungen für alle Projekte der Solution -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Deutsche Zahlen- und Datumsformate (BR-17) brauchen die vollständigen Kulturdaten -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FundFlow.Domain/FundFlow.Domain.csproj" />
+    <Project Path="src/FundFlow.Infrastructure/FundFlow.Infrastructure.csproj" />
+    <Project Path="src/FundFlow.Scenarios/FundFlow.Scenarios.csproj" />
+    <Project Path="src/FundFlow.Web/FundFlow.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FundFlow.Tests/FundFlow.Tests.csproj" />
+  </Folder>
+</Solution>
