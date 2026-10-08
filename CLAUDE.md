@@ -16,7 +16,7 @@
 |---|---|---|
 | `src/FundFlow.Domain` | Fachmodell, Regeln, Wirksamkeitstermin – keine Abhängigkeiten zu EF Core oder ASP.NET | – |
 | `src/FundFlow.Infrastructure` | EF Core, SQLite, Sitzungsfilter, Musterdaten, Auftragsanlage | Domain |
-| `src/FundFlow.Scenarios` | Testfälle TC-01 … TC-29 als Daten und Ausführung | Domain, Infrastructure |
+| `src/FundFlow.Scenarios` | Testfälle TC-01 … TC-30 als Daten und Ausführung | Domain, Infrastructure |
 | `src/FundFlow.Web` | Razor Pages | alle `src`-Projekte |
 | `tests/FundFlow.Tests` | xUnit | alle Projekte |
 

@@ -26,6 +26,22 @@ public static class RuleMessages
     public const string RequestedFromNotPast =
         "Das Wunschdatum muss heute oder später liegen.";
 
+    /// <summary>
+    /// BR-07: Hinweis bei Verschiebung. Wechselt der Ausführungstag, findet am verpassten Termin
+    /// keine Ausführung nach altem Plan statt – dann gilt die allgemeine Formulierung (Fachkonzept 8.3).
+    /// </summary>
+    public static string EffectiveDateShifted(DateOnly missedDate, DateOnly effectiveDate, bool executionDayChanged)
+    {
+        var missed = missedDate.ToString("dd.MM.yyyy", German);
+        var effective = effectiveDate.ToString("dd.MM.yyyy", German);
+        var lead = $"Ihr Auftrag geht nach dem Annahmeschluss für den {missed} ein. " +
+                   $"Die Änderung wird daher erst zum {effective} wirksam; ";
+
+        return executionDayChanged
+            ? lead + "bis dahin wird Ihr Sparplan zu den bisherigen Konditionen ausgeführt."
+            : lead + $"die Ausführung am {missed} erfolgt noch zu den bisherigen Konditionen.";
+    }
+
     public const string MaxMonthlyAmount =
         "Die monatliche Sparrate darf höchstens 10.000,00 € betragen.";
 

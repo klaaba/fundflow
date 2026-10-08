@@ -1,10 +1,18 @@
 # FundFlow – Fachkonzept
 
-**Version:** 1.2  
+**Version:** 1.3  
 **Stand:** 8. Oktober 2026  
-**Status:** Fachlich freigegeben – Entscheidungen E-01 bis E-12 am 08.10.2026 bestätigt
+**Status:** Version 1.2 fachlich freigegeben (Entscheidungen E-01 bis E-12 am 08.10.2026 bestätigt); Änderungen der Version 1.3 zur Freigabe
 
 ## 0. Änderungshistorie
+
+### Version 1.3
+
+| Bereich | Änderung |
+|---|---|
+| BR-07 | Zweite Formulierung des Verschiebungshinweises, wenn sich der Ausführungstag ändert: Am verpassten Termin findet dann keine Ausführung nach altem Plan statt (Befund aus der Umsetzung). |
+| Testfälle | TC-30 für diesen Fall ergänzt. |
+| Formatprüfung | Abschnitt 8.5 „Auslegung der Eingabeprüfung“ ergänzt (Befunde aus Etappe 1). |
 
 ### Version 1.2
 
@@ -178,7 +186,7 @@ Die Nummern aus Version 1.0 bleiben unverändert; neue Regeln werden fortlaufend
 | BR-04 | Validierung | Die Summe aller Zielanteile beträgt exakt 100 %. | „Die Fondsaufteilung ergibt aktuell X %. Bitte passen Sie die Anteile auf insgesamt 100 % an.“ |
 | BR-05 | Validierung | Jeder Zielanteil ist größer als 0 %. | „Bitte entfernen Sie Fonds ohne Anteil oder geben Sie einen Anteil größer als 0 % ein.“ |
 | BR-06 | Validierung | Das Wunschdatum liegt nicht in der Vergangenheit (heute ist zulässig). | „Das Wunschdatum muss heute oder später liegen.“ |
-| BR-07 | Ableitung | Ermittlung des Wirksamkeitstermins unter Berücksichtigung des Annahmeschlusses (siehe 8.3). | Hinweis bei Verschiebung: „Ihr Auftrag geht nach dem Annahmeschluss für den {T} ein. Die Änderung wird daher erst zum {E} wirksam; die Ausführung am {T} erfolgt noch zu den bisherigen Konditionen.“ |
+| BR-07 | Ableitung | Ermittlung des Wirksamkeitstermins unter Berücksichtigung des Annahmeschlusses (siehe 8.3). | Hinweis bei Verschiebung, Ausführungstag unverändert: „Ihr Auftrag geht nach dem Annahmeschluss für den {T} ein. Die Änderung wird daher erst zum {E} wirksam; die Ausführung am {T} erfolgt noch zu den bisherigen Konditionen.“ Ausführungstag geändert: „Ihr Auftrag geht nach dem Annahmeschluss für den {T} ein. Die Änderung wird daher erst zum {E} wirksam; bis dahin wird Ihr Sparplan zu den bisherigen Konditionen ausgeführt.“ |
 | BR-08 | Systemregel | Ein gültiger Auftrag wird vollständig in einem Schritt angelegt (siehe 8.4). | – |
 | BR-09 | Validierung | Die monatliche Sparrate beträgt höchstens 10.000,00 €. | „Die monatliche Sparrate darf höchstens 10.000,00 € betragen.“ |
 | BR-10 | Validierung | Zielanteile sind ganze Prozentwerte. | „Bitte geben Sie die Anteile in ganzen Prozent an.“ |
@@ -210,6 +218,12 @@ Bis einschließlich `E − 1 Tag` gilt die bisherige Version. Da nur der 1., 15.
 | 12.10.2026 | 12.10.2026 | 15.10.2026 | 15.10.2026 | nein (Grenzwert) |
 | 13.10.2026 | 13.10.2026 | 16.10.2026 | 15.11.2026 | ja, 15.10. verpasst |
 
+**Ausführungstag geändert:** `T` ist ein Termin mit dem *neuen* Ausführungstag. Nach dem bisherigen Plan findet an `T` keine Ausführung statt; der Hinweis nennt deshalb nur, dass bis `E` die bisherigen Konditionen gelten.
+
+| Heute | Wunschdatum | Ausführungstag | F | Wirksamkeitstermin | Hinweis |
+|---|---|---|---|---|---|
+| 30.10.2026 | 30.10.2026 | 15 → 1 | 02.11.2026 | 01.12.2026 | ja, 01.11. verpasst; allgemeine Formulierung |
+
 ### 8.4 Verarbeitung bei Anlage (BR-08)
 
 Die folgenden Schritte erfolgen in **einer Transaktion** – entweder vollständig oder gar nicht:
@@ -224,6 +238,20 @@ Die folgenden Schritte erfolgen in **einer Transaktion** – entweder vollständ
    - Fondsaufteilung: ein Eintrag je Fonds, dessen Anteil sich geändert hat; hinzugefügte Fonds mit altem Wert „–“, entfernte Fonds mit neuem Wert „–“.
 
 Es wird nichts gelöscht: Ersetzte Aufträge und verworfene Versionen bleiben mit ihrem Status erhalten.
+
+### 8.5 Auslegung der Eingabeprüfung
+
+| Eingabe | Behandlung | Regel |
+|---|---|---|
+| Sparrate „250.50“ (Punkt als Dezimaltrennzeichen) | Formatfehler – wird nicht als 25.050 € gelesen | BR-17 |
+| Sparrate „1.234,56“, „250“, „250,00 €“ | gültig | – |
+| Sparrate „-20“ | Verstoß gegen den Mindestbetrag | BR-01 |
+| Anteil nicht lesbar, z. B. „abc“ | Meldung „ganze Prozent“; Summenprüfung entfällt | BR-10 |
+| Anteil mit Prozentzeichen, z. B. „60 %“ | gültig | – |
+| Ausführungstag nicht lesbar | Meldung „gültiger Ausführungstag“ | BR-03 |
+| Wunschdatum „2026-10-08“ (Datumsfeld) oder „08.10.2026“ | gültig | – |
+| Sparplan ohne Fonds | zwei Meldungen: Anzahl und Summe 0 % | BR-11, BR-04 |
+| Nur das Wunschdatum geändert | keine Änderung im Sinne von BR-15 | BR-15 |
 
 ## 9. Statusmodell
 
@@ -448,6 +476,7 @@ INS-07 wird in der Oberfläche nicht zur Auswahl angeboten. Er dient dem Nachwei
 | TC-27 | A0 | Sparrate 20,00 €, INS-01 60 %, INS-02 30 %, INS-03 8 % | Abgelehnt, **beide** Meldungen (BR-01 und BR-04) werden gleichzeitig angezeigt. | BR-01, BR-04 |
 | TC-28 | A1 | Sparrate 250,00 € (= offener Auftrag) | Abgelehnt, Meldung BR-15 b mit Nummer CR-2026-000001. | BR-15 |
 | TC-29 | A1 | Sparrate 150,00 € (= gültige Version) | Abgelehnt, Meldung BR-15 a. Dokumentierte Einschränkung von Version 1: Rücknahme erst mit Storno (Ausbaustufe). | BR-15 |
+| TC-30 | A0, Referenzdatum 30.10.2026 | Ausführungstag 1, Wunschdatum 30.10.2026 | Auftrag angelegt, Wirksamkeitstermin 01.12.2026; Verschiebungshinweis nennt 01.11.2026 in der allgemeinen Formulierung („bis dahin … bisherigen Konditionen“). | BR-03, BR-07 |
 
 ### 12.3 Rückverfolgbarkeit Regel ↔ Testfall
 
@@ -455,11 +484,11 @@ INS-07 wird in der Oberfläche nicht zur Auswahl angeboten. Er dient dem Nachwei
 |---|---|
 | BR-01 | TC-01, TC-02, TC-08, TC-09, TC-27 |
 | BR-02 | TC-10 |
-| BR-03 | TC-05, TC-21 |
+| BR-03 | TC-05, TC-21, TC-30 |
 | BR-04 | TC-03, TC-04, TC-27 |
 | BR-05 | TC-13 |
 | BR-06 | TC-06, TC-18 |
-| BR-07 | TC-18, TC-19, TC-20, TC-21 |
+| BR-07 | TC-18, TC-19, TC-20, TC-21, TC-30 |
 | BR-08 | TC-01, TC-07, TC-25 |
 | BR-09 | TC-11, TC-12 |
 | BR-10 | TC-14 |
@@ -513,7 +542,7 @@ Die Architektur soll dem fachlichen Ziel dienen und für einen Einzelentwickler 
 | Systemzeit | `TimeProvider` | Steuerbares „heute“ für Tests und Testansicht |
 | Datenhaltung | SQLite | Muster- und Änderungsdaten je Demo-Sitzung |
 | Datenzugriff | Entity Framework Core | Abbildung der Kernobjekte und Beziehungen |
-| Tests | xUnit | Automatisierte Tests aller Testfälle TC-01 bis TC-29 |
+| Tests | xUnit | Automatisierte Tests aller Testfälle TC-01 bis TC-30 |
 | Bereitstellung | Docker-Container hinter Reverse Proxy | Reproduzierbarer Betrieb einer öffentlichen Demo |
 
 Die Testfälle aus Abschnitt 12 werden **einmal** als Daten definiert und sowohl von den xUnit-Tests als auch von der Testansicht verwendet. Die Testansicht führt sie gegen dieselbe Fachlogik wie das Formular aus – mit festem Referenzdatum und einem eigenen Ausgangsstand im Speicher.
@@ -536,7 +565,7 @@ FundFlow ist für Version 1 erfolgreich umgesetzt, wenn:
 
 1. ein Besucher einen Muster-Sparplan öffnen, ändern und vor dem Absenden den Wirksamkeitstermin sehen kann;
 2. die Regeln BR-01 bis BR-17 nachvollziehbar umgesetzt sind;
-3. die Testfälle TC-01 bis TC-29 dokumentiert, automatisiert und erfolgreich ausgeführt sind und jede Regel mindestens einem Testfall zugeordnet ist;
+3. die Testfälle TC-01 bis TC-30 dokumentiert, automatisiert und erfolgreich ausgeführt sind und jede Regel mindestens einem Testfall zugeordnet ist;
 4. bei Erfolg ein Änderungsauftrag mit Statusverlauf, Sparplan-Version und Protokoll sichtbar wird;
 5. bei Fehlern kein Auftrag angelegt wird und alle Meldungen verständlich und gleichzeitig angezeigt werden;
 6. die Demo-Daten verschiedener Besucher voneinander getrennt sind;
