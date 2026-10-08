@@ -116,11 +116,11 @@ public sealed class ChangeRequestService(FundFlowDbContext db, TimeProvider time
     {
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
 
-        // Schritt 1: erneute Prüfung und Neuberechnung – erst danach wird eine Auftragsnummer vergeben.
+        // Schritt 1: erneute Prüfung ALLER Regeln und Neuberechnung – erst danach wird eine Auftragsnummer vergeben.
+        // Keine Ausnahme für bereits „vorgeprüfte“ Regeln: Live-Summe und Zusammenfassung sind nur Komfort,
+        // das Formular kann ohne sie oder verändert abgesendet werden (DEF-001).
         var state = await LoadStateAsync(savingsPlanId, cancellationToken);
-        // Die Summe der Anteile wurde bereits in der Oberfläche (Live-Summe) und in der Zusammenfassung
-        // geprüft – beim Absenden genügt die Prüfung der übrigen Regeln.
-        var preparation = ChangePreparer.Prepare(input, state.ToValidationContext(), checkAllocationSum: false);
+        var preparation = ChangePreparer.Prepare(input, state.ToValidationContext());
 
         if (preparation.Prepared is not { } prepared)
         {

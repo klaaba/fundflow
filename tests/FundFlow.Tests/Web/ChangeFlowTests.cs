@@ -50,6 +50,22 @@ public sealed class ChangeFlowTests(FundFlowWebFactory factory) : IClassFixture<
     }
 
     [Fact]
+    public async Task DEF001_direkt_abgesendetes_Formular_mit_98_Prozent_wird_abgelehnt()
+    {
+        // Ohne vorherige Zusammenfassung – wie ein manipuliertes Formular oder ein direkter Aufruf.
+        var client = factory.CreateClient();
+        var token = await GetTokenAsync(client, ChangeUrl);
+        var fields = ChangeFields(allocations: [("INS-01", "60"), ("INS-02", "30"), ("INS-03", "8")]);
+        fields.Add(new("ConfirmedEffectiveDate", "2026-10-15"));
+
+        var result = await PostAsync(client, $"{ChangeUrl}?handler=Submit", token, fields);
+
+        Assert.Contains("Der Auftrag wurde nicht angelegt", result.Html);
+        Assert.Contains("ergibt aktuell 98 %", result.Html);
+        Assert.Contains("Noch keine Aufträge", await client.GetStringAsync("/auftraege"));
+    }
+
+    [Fact]
     public async Task Abweichender_Termin_beim_Absenden_zeigt_die_Zusammenfassung_erneut()
     {
         var client = factory.CreateClient();

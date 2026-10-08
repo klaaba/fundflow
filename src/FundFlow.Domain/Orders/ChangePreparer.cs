@@ -21,9 +21,9 @@ public sealed record PrepareResult(IReadOnlyList<ValidationIssue> Issues, Prepar
 /// </summary>
 public static class ChangePreparer
 {
-    public static PrepareResult Prepare(ChangeRequestInput input, ValidationContext context, bool checkAllocationSum = true)
+    public static PrepareResult Prepare(ChangeRequestInput input, ValidationContext context)
     {
-        var validation = ChangeRequestValidator.Validate(input, context, checkAllocationSum);
+        var validation = ChangeRequestValidator.Validate(input, context);
         if (validation.Change is not { } change)
         {
             return new PrepareResult(validation.Issues, null);
