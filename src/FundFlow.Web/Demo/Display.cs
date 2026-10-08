@@ -37,6 +37,12 @@ public static partial class Display
 
     public static string Date(DateOnly date) => date.ToString("dd.MM.yyyy", German);
 
+    /// <summary>Ausgeschriebenes Datum wie „8. Oktober 2026“ – unverwechselbar, unabhängig von der Browsersprache.</summary>
+    public static string LongDate(DateOnly date) => date.ToString("d. MMMM yyyy", German);
+
+    /// <summary>Ausgeschriebenes Datum mit Wochentag wie „Donnerstag, 8. Oktober 2026“.</summary>
+    public static string LongDateWithWeekday(DateOnly date) => date.ToString("dddd, d. MMMM yyyy", German);
+
     public static string DateTime(DateTimeOffset utc) =>
         TimeZoneInfo.ConvertTime(utc, BusinessCalendar.BerlinTimeZone).ToString("dd.MM.yyyy, HH:mm 'Uhr'", German);
 

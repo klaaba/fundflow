@@ -8,7 +8,7 @@ public sealed class SmokeTests(FundFlowWebFactory factory) : IClassFixture<FundF
     [Theory]
     [InlineData("/", "Keine Anlageberatung")]
     [InlineData("/sparplan", "Sparplan SP-000001")]
-    [InlineData("/sparplan/aendern", "Sparplan ändern")]
+    [InlineData("/sparplan/aendern", "Donnerstag, 8. Oktober 2026")]
     [InlineData("/auftraege", "Noch keine Aufträge")]
     [InlineData("/testansicht", "30</span> von 30 Testfällen erfüllt")]
     [InlineData("/ueber", "Über das Projekt")]

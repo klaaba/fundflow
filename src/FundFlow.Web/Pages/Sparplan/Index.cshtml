@@ -24,7 +24,7 @@
         <p>
             <strong>Geplante Änderung:</strong> Auftrag
             <a asp-page="/Auftraege/Detail" asp-route-number="@open.RequestNumber">@open.RequestNumber</a>
-            wird zum @Display.Date(open.EffectiveDate) wirksam.
+            wird zum @Display.LongDate(open.EffectiveDate) wirksam.
         </p>
         <p>Ein neuer Änderungsauftrag ersetzt diesen offenen Auftrag. Eine separate Stornierung ist in dieser Demo-Version nicht möglich.</p>
     </aside>

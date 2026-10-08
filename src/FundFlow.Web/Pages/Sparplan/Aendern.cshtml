@@ -87,8 +87,9 @@
             <div class="field">
                 <label for="f-date">Gültig frühestens ab</label>
                 <input id="f-date" type="date" name="Form.RequestedFrom" value="@form.RequestedFrom"
-                       aria-describedby="@Describe(InputFields.RequestedFrom, "f-date-help", "f-date-error")"
+                       data-date-input aria-describedby="@Describe(InputFields.RequestedFrom, "f-date-long f-date-help", "f-date-error")"
                        aria-invalid="@(Model.HasIssue(InputFields.RequestedFrom) ? "true" : null)" />
+                <p class="date-long" id="f-date-long" data-date-long aria-live="polite">@(Model.RequestedFromDate is { } wish ? Display.LongDateWithWeekday(wish) : "")</p>
                 <p class="help" id="f-date-help">Ihr Wunschdatum. Den tatsächlichen ersten Ausführungstermin ermittelt FundFlow.</p>
                 @{ FieldErrors(InputFields.RequestedFrom, "f-date-error"); }
             </div>
@@ -187,9 +188,9 @@ else
 
     <section class="panel effective" aria-labelledby="effective-heading">
         <h2 id="effective-heading" class="effective__label">Wirksam ab</h2>
-        <p class="effective__date">@Display.Date(schedule.EffectiveDate)</p>
+        <p class="effective__date">@Display.LongDate(schedule.EffectiveDate)</p>
         <p class="effective__detail">
-            Erste Ausführung mit den neuen Konditionen. Ihr Wunschdatum: @Display.Date(prepared.Change.RequestedFrom).
+            Erste Ausführung mit den neuen Konditionen. Ihr Wunschdatum: @Display.LongDateWithWeekday(prepared.Change.RequestedFrom).
             <span class="rule">BR-07</span>
         </p>
         @if (schedule.ShiftHint is { } hint)

@@ -16,7 +16,8 @@ public sealed class ChangeFlowTests(FundFlowWebFactory factory) : IClassFixture<
         // Schritte 4 und 5: prüfen und Zusammenfassung
         var review = await PostAsync(client, $"{ChangeUrl}?handler=Check", token, ChangeFields(amount: "250,00"));
         Assert.Contains("Änderung prüfen und bestätigen", review.Html);
-        Assert.Contains("15.10.2026", review.Html);
+        Assert.Contains("15. Oktober 2026", review.Html);
+        Assert.Contains("Ihr Wunschdatum: Donnerstag, 8. Oktober 2026", review.Html);
         Assert.Contains("150,00 €", review.Html);
         Assert.Contains("250,00 €", review.Html);
 
@@ -76,7 +77,7 @@ public sealed class ChangeFlowTests(FundFlowWebFactory factory) : IClassFixture<
         var result = await PostAsync(client, $"{ChangeUrl}?handler=Submit", token, fields);
 
         Assert.Contains("Der Wirksamkeitstermin hat sich seit Ihrer letzten Prüfung geändert", result.Html);
-        Assert.Contains("15.10.2026", result.Html);
+        Assert.Contains("15. Oktober 2026", result.Html);
         Assert.Contains("Noch keine Aufträge", await client.GetStringAsync("/auftraege"));
     }
 

@@ -10,7 +10,7 @@
 @if (Model.JustCreated)
 {
     <section class="banner banner--success" role="status">
-        <p><strong>Auftrag angelegt.</strong> Ihre Änderung wird zum @Display.Date(request.EffectiveDate) wirksam.</p>
+        <p><strong>Auftrag angelegt.</strong> Ihre Änderung wird zum @Display.LongDate(request.EffectiveDate) wirksam.</p>
         @if (Model.ShiftHint is { } hint)
         {
             <p>@hint</p>

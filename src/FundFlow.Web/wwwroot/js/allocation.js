@@ -70,6 +70,15 @@
 
   list.addEventListener("input", updateSum);
 
+  // Datum unter dem Datumsfeld ausschreiben – das Feld selbst zeigt das Format der Browsersprache.
+  const dateInput = document.querySelector("[data-date-input]");
+  const dateLong = document.querySelector("[data-date-long]");
+  const longFormat = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  dateInput?.addEventListener("input", () => {
+    const value = dateInput.valueAsDate;
+    dateLong.textContent = value ? longFormat.format(value) : "";
+  });
+
   document.querySelector("[data-focus-on-load]")?.focus();
   reindex();
   updateSum();

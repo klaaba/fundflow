@@ -44,6 +44,9 @@ public class AendernModel(ChangeRequestService orders) : DemoPageModel
 
     public string? OpenRequestNumber => State.OpenRequest?.RequestNumber;
 
+    /// <summary>Wunschdatum aus dem Formular, falls lesbar – für die ausgeschriebene Anzeige unter dem Feld.</summary>
+    public DateOnly? RequestedFromDate => InputParser.TryParseDate(Form.RequestedFrom, out var date) ? date : null;
+
     /// <summary>Schritt 2: Startwerte aus dem offenen Auftrag, sonst aus der gültigen Version.</summary>
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
