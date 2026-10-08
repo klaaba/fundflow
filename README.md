@@ -4,6 +4,8 @@
 
 Fiktive Daten · keine Anlageberatung · unabhängiges Demonstrationsprojekt
 
+**Demo:** https://fundflow.inspiras.de
+
 FundFlow zeigt an einem einzigen Vorgang, wie aus einer fachlichen Anforderung eine getestete Umsetzung wird: Eine Kundin ändert ihren Fonds-Sparplan – Sparrate, Ausführungstag oder Fondsaufteilung. Das System prüft die Eingaben gegen 17 fachliche Regeln, ermittelt unter Berücksichtigung eines Annahmeschlusses, ab wann die Änderung gilt, ersetzt einen noch offenen Auftrag und hält jede Änderung als Version mit Statusverlauf und Protokoll fest.
 
 ![Sparplan mit Versionsleiste: gültige, geplante und verworfene Version](docs/screenshots/02-sparplan-versionen.jpg)
@@ -13,7 +15,7 @@ FundFlow zeigt an einem einzigen Vorgang, wie aus einer fachlichen Anforderung e
 ## Rundgang in fünf Minuten
 
 1. **Fachkonzept** – [docs/01_Fachkonzept.md](docs/01_Fachkonzept.md): Prozess (Abschnitt 7), Regeln (8), Statusmodell (9), Testfälle mit Rückverfolgbarkeit (12).
-2. **Demo** – Sparplan ändern, eine Fondsaufteilung von 60 / 30 / 8 % absenden und die Meldung mit Regelkennung ansehen; danach zwei Aufträge nacheinander anlegen und den Statusverlauf vergleichen.
+2. **[Demo](https://fundflow.inspiras.de)** – Sparplan ändern, eine Fondsaufteilung von 60 / 30 / 8 % absenden und die Meldung mit Regelkennung ansehen; danach zwei Aufträge nacheinander anlegen und den Statusverlauf vergleichen.
 3. **Testansicht** – alle 30 Testfälle mit erwartetem und tatsächlichem Wert je Prüfung und die Regelabdeckung.
 4. **Fehlerbericht** – [docs/04_Fehlerbericht_DEF-001.md](docs/04_Fehlerbericht_DEF-001.md): ein bewusst nachgestellter Fehler, seine Entdeckung durch die Testfälle, Ursache, Behebung und Erkenntnisse.
 5. **Code** – die Regeln in [ChangeRequestValidator.cs](src/FundFlow.Domain/Rules/ChangeRequestValidator.cs), die Auftragsanlage in einem Schritt in [ChangeRequestService.cs](src/FundFlow.Infrastructure/Orders/ChangeRequestService.cs).
@@ -57,14 +59,15 @@ FundFlow ist mit KI-Unterstützung (Claude Code) entstanden – fachlich gesteue
 | [02_Architektur.md](docs/02_Architektur.md) | Technische Umsetzung und Entscheidungen |
 | [03_Testbericht.md](docs/03_Testbericht.md) | Teststrategie, Ergebnisse, Gegenproben, manuelle Prüfung |
 | [04_Fehlerbericht_DEF-001.md](docs/04_Fehlerbericht_DEF-001.md) | Fehlerbeispiel von der Entdeckung bis zur Behebung |
+| [05_Betrieb.md](docs/05_Betrieb.md) | Container, Reverse Proxy, Einrichtung und Aktualisierung |
 
 ## Technik
 
-.NET 10 · ASP.NET Core Razor Pages · Entity Framework Core mit SQLite · xUnit
+.NET 10 · ASP.NET Core Razor Pages · Entity Framework Core mit SQLite · xUnit · Docker · Caddy
 
 Die Fachlogik ist von Oberfläche und Datenbank getrennt und ohne beide testbar. Jede Besucherin und jeder Besucher arbeitet mit einer eigenen Kopie der Musterdaten; nach 24 Stunden ohne Aktivität werden sie gelöscht. Einzelheiten: [Architektur](docs/02_Architektur.md).
 
-**Tests:** 179 automatisierte Tests auf fünf Ebenen – Regeln, Verarbeitung, Testkatalog, Rückverfolgbarkeit, Oberfläche. Einzelheiten: [Testbericht](docs/03_Testbericht.md).
+**Tests:** 180 automatisierte Tests auf fünf Ebenen – Regeln, Verarbeitung, Testkatalog, Rückverfolgbarkeit, Oberfläche. Einzelheiten: [Testbericht](docs/03_Testbericht.md).
 
 ## Lokal starten
 
@@ -80,7 +83,8 @@ Die Anwendung ist danach unter <http://localhost:5085> erreichbar. Die SQLite-Da
 ## Projektstruktur
 
 ```
-docs/                         Fachkonzept, Architektur, Testbericht, Fehlerbericht, Screenshots
+deploy/                       Caddy-Block, logrotate, Einrichtungs- und Aktualisierungsskript
+docs/                         Fachkonzept, Architektur, Testbericht, Fehlerbericht, Betrieb, Screenshots
 src/FundFlow.Domain/          Fachlogik: Regeln, Wirksamkeitstermin, Statusmodell
 src/FundFlow.Infrastructure/  Datenhaltung, Auftragsanlage, Demo-Sitzungen
 src/FundFlow.Scenarios/       Testfälle TC-01 bis TC-30 als Daten
@@ -100,7 +104,7 @@ tests/FundFlow.Tests/         automatisierte Tests
 | 5 | Oberfläche | erledigt |
 | 6 | Fehlerbeispiel DEF-001 | erledigt |
 | 7 | Dokumentation und Feinschliff | erledigt |
-| 8 | Veröffentlichung | offen |
+| 8 | Veröffentlichung | erledigt |
 
 ## Gestaltung und Schriften
 

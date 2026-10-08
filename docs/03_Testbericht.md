@@ -6,7 +6,7 @@
 
 | Kennzahl | Ergebnis |
 |---|---|
-| Automatisierte Tests | **179 von 179 bestanden** |
+| Automatisierte Tests | **180 von 180 bestanden** – auch beim Bauen des Containers |
 | Testfälle aus dem Fachkonzept (TC-01 bis TC-30) | **30 von 30 erfüllt** |
 | Fachliche Regeln mit mindestens einem Testfall | **17 von 17** (BR-01 bis BR-17) |
 | Abgleich Testkatalog ↔ Fachkonzept (Tabellen 12.2 und 12.3) | übereinstimmend |
@@ -30,7 +30,7 @@ Getestet wird auf mehreren Ebenen. Jede Ebene beantwortet eine eigene Frage:
 | Verarbeitung | Wird ein Auftrag vollständig und in einem Schritt angelegt – oder gar nicht? | 20 | Auftragsanlage, Ersetzung, Versionen, Sitzungstrennung, Zurücksetzen, Aufräumen |
 | Testkatalog | Sind die 30 Testfälle des Fachkonzepts erfüllt? | 31 | TC-01 bis TC-30 gegen Fachlogik und Datenbank; Vollständigkeit des Katalogs |
 | Rückverfolgbarkeit | Hat jede Regel einen Testfall, und stimmt der Code mit dem Dokument überein? | 5 | liest `docs/01_Fachkonzept.md` ein und vergleicht |
-| Oberfläche | Funktioniert der Ablauf so, wie ein Besucher ihn erlebt? | 16 | alle Seiten, Prüfen und Absenden, Fehlerfall, geänderter Termin, Sitzungstrennung, DEF-001 |
+| Oberfläche | Funktioniert der Ablauf so, wie ein Besucher ihn erlebt? | 17 | alle Seiten, Prüfen und Absenden, Fehlerfall, geänderter Termin, Sitzungstrennung, DEF-001, Cookies hinter dem Proxy |
 
 **Testumgebung.** Datenbanktests laufen gegen SQLite im Arbeitsspeicher mit den echten Migrationen. Das Datum ist fest vorgegeben (Referenzdatum 08.10.2026, für einzelne Fälle 12.10., 13.10. und 30.10.2026), sodass Termine und Grenzfälle reproduzierbar sind. Jeder Testfall des Katalogs erhält eine eigene Datenbank.
 
@@ -101,8 +101,25 @@ Die Gegenproben bis auf DEF-001 wurden nach dem Testlauf zurückgenommen und sin
 
 Dabei gefundene und behobene Mängel: Beträge brachen in Tabellen um; die Auftragsliste war bei 320 Pixel breiter als der Bildschirm (durch `overflow: hidden` verdeckt); Auftragsnummern brachen am Bindestrich um; neue Fondszeilen hatten für Screenreader keine Nummer; die Regelspalte der Testansicht war zu breit.
 
-## 6. Nicht getestet
+## 6. Prüfung der öffentlichen Demo
+
+Geprüft am 08.10.2026 unter https://fundflow.inspiras.de:
+
+| Prüfpunkt | Ergebnis |
+|---|---|
+| Zertifikat | Let's Encrypt, gültig bis 06.01.2027, automatische Verlängerung durch Caddy |
+| HTTP | leitet dauerhaft auf HTTPS weiter (308) |
+| Sicherheits-Header | HSTS, `nosniff`, `DENY` für Einbettung, Referrer-Policy, `noindex` |
+| Cookies | alle mit `Secure`, `HttpOnly` und `SameSite` |
+| Seiten | alle acht Seiten antworten mit 200 |
+| Testansicht | 30 von 30 Testfällen erfüllt |
+| Ablauf | Prüfen, Absenden und Auftragsdetail funktionieren; ein zweiter Besucher sieht den Auftrag nicht |
+| Darstellung | 375 Pixel ohne seitliches Scrollen, Schriften geladen |
+| Andere Dienste auf dem Server | unverändert erreichbar |
+
+Gefunden und behoben bei der Einrichtung: Der neue Test für Cookies hinter dem Proxy zeigte, dass ASP.NET das Antiforgery-Cookie standardmäßig ohne `Secure` setzt. Außerdem legte die Konfigurationsprüfung von Caddy die Protokolldatei als root an, sodass Caddy sie nicht öffnen konnte; das Einrichtungsskript legt sie nun vorab für den Caddy-Dienst an.
+
+## 7. Nicht getestet
 
 - Last und gleichzeitige Zugriffe vieler Besucher (SQLite, siehe [Architektur](02_Architektur.md), Abschnitt 10)
 - Browser außer dem eingebauten Chromium-Browser der Entwicklungsumgebung
-- Betrieb hinter dem Reverse Proxy mit HTTPS (folgt mit der Veröffentlichung)
